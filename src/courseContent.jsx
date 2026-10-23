@@ -3,100 +3,6 @@ import { getApiBase } from './apiConfig'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { Navbar, Footer } from './components'
 
-// Pre-seeded fallback study materials in case backend isn't loaded yet
-const initialDefaultMaterials = [
-  {
-    id: 'mat-av-1',
-    course: 'Aviation Course',
-    type: 'video',
-    title: 'Cabin Crew Safety Procedures & In-Flight Demonstration',
-    url: 'https://www.youtube.com/watch?v=0kE2u8f7B2c',
-    duration: '14 mins',
-    description: 'Comprehensive practical demonstration of pre-flight safety briefing, oxygen mask protocol, emergency exits, and life-vest instructions.',
-  },
-  {
-    id: 'mat-av-2',
-    course: 'Aviation Course',
-    type: 'video',
-    title: 'Airport Ground Staff & Boarding Gate Operations',
-    url: 'https://www.youtube.com/watch?v=kYJvSg1H9bM',
-    duration: '18 mins',
-    description: 'Learn passenger handling, check-in baggage protocols, boarding pass verification, and gate management in busy airport terminals.',
-  },
-  {
-    id: 'mat-av-3',
-    course: 'Aviation Course',
-    type: 'pdf',
-    title: 'Aviation Fundamentals & Flight Safety Regulations Handbook',
-    url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    duration: '48 Pages',
-    description: 'Official IATA-aligned study guide covering aviation terminology, flight codes, airport zones, and emergency preparedness.',
-  },
-  {
-    id: 'mat-av-4',
-    course: 'Aviation Course',
-    type: 'pdf',
-    title: 'Cabin Crew Grooming & Professional Etiquette Guide',
-    url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    duration: '24 Pages',
-    description: 'Standard operating procedures for uniform presentation, body language, passenger communication, and conflict resolution.',
-  },
-  {
-    id: 'mat-tr-1',
-    course: 'Tour and Travel Course',
-    type: 'video',
-    title: 'Tour & Travel Management - Complete Overview',
-    url: 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
-    duration: '16 mins',
-    description: 'Industry insights on how international tourism packages are created, costed, and executed for leisure and business groups.',
-  },
-  {
-    id: 'mat-tr-2',
-    course: 'Tour and Travel Course',
-    type: 'pdf',
-    title: 'Global Tour Planning, Itinerary Design & Ticketing Manual',
-    url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    duration: '52 Pages',
-    description: 'Step-by-step handbook on GDS reservation codes, visa guidelines, currency conversion, and luxury itinerary planning.',
-  },
-  {
-    id: 'mat-mr-1',
-    course: 'Maritime and Hotel Services Course',
-    type: 'video',
-    title: 'Luxury Cruise Ship Operations & Five-Star Hospitality',
-    url: 'https://www.youtube.com/watch?v=fJ9rUzIMcZQ',
-    duration: '20 mins',
-    description: 'Explore shipboard duties, STCW safety guidelines, guest relations, and fine dining operations aboard international cruise liners.',
-  },
-  {
-    id: 'mat-mr-2',
-    course: 'Maritime and Hotel Services Course',
-    type: 'pdf',
-    title: 'Maritime Hospitality & Food & Beverage Standards',
-    url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    duration: '36 Pages',
-    description: 'Comprehensive reference guide for maritime hospitality, bar management, room service protocols, and guest etiquette.',
-  },
-  {
-    id: 'mat-ai-1',
-    course: 'AI & Digital Marketing Course',
-    type: 'video',
-    title: 'Digital Marketing Foundations & AI Workflow Automation',
-    url: 'https://www.youtube.com/watch?v=bixR-KIJKYM',
-    duration: '25 mins',
-    description: 'Learn search engine optimization (SEO), performance marketing on Meta & Google Ads, and how AI tools automate content creation.',
-  },
-  {
-    id: 'mat-ai-2',
-    course: 'AI & Digital Marketing Course',
-    type: 'pdf',
-    title: 'Modern AI Marketing Playbook & SEO Checklist',
-    url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    duration: '40 Pages',
-    description: 'High-impact prompts, keyword research templates, and social media campaign blueprints for digital marketers.',
-  },
-]
-
 // Helper to convert YouTube link or direct video to embedded iframe URL
 function getEmbedUrl(url) {
   if (!url) return ''
@@ -124,30 +30,33 @@ export default function CourseContent() {
   // Active student admission details (from params or session storage)
   const [ticketInfo, setTicketInfo] = useState(() => {
     try {
+      // 1. Check classroom session (retained even after registration ticket is cut)
+      const classroomStudent = sessionStorage.getItem('active_classroom_student')
+      if (classroomStudent) return JSON.parse(classroomStudent)
+
+      // 2. Active registration ticket
       const saved = sessionStorage.getItem('active_admission_ticket')
       if (saved) return JSON.parse(saved)
 
-      // Admin preview authorization check
+      // 3. Admin preview authorization check
       const adminAuth = localStorage.getItem('lms_admin_auth')
       if (adminAuth) {
         return { name: 'Admin Preview', course: 'Aviation Course', id: 'ADMIN-VIEW' }
       }
 
-      // Check ticket URL param
+      // 4. Check ticket URL param
       const urlParams = new URLSearchParams(window.location.search)
       const urlTicket = urlParams.get('ticket')
       if (urlTicket) {
         const admissions = JSON.parse(localStorage.getItem('lms_admissions') || '[]')
         const matched = admissions.find((a) => a.id === urlTicket)
-        if (matched) {
-          sessionStorage.setItem('active_admission_ticket', JSON.stringify(matched))
-          return matched
-        }
-        return {
+        const student = matched || {
           name: 'Enrolled Student',
           id: urlTicket,
           course: urlParams.get('course') || 'Aviation Course',
         }
+        sessionStorage.setItem('active_classroom_student', JSON.stringify(student))
+        return student
       }
       return null
     } catch {
@@ -162,7 +71,7 @@ export default function CourseContent() {
     e.preventDefault()
     const trimmed = ticketInput.trim()
     if (!trimmed) {
-      setTicketError('Kripya apna Ticket ID ya Mobile Number enter karein.')
+      setTicketError('Please enter your Ticket ID or registered Mobile Number.')
       return
     }
 
@@ -176,7 +85,7 @@ export default function CourseContent() {
       )
 
       if (matched) {
-        sessionStorage.setItem('active_admission_ticket', JSON.stringify(matched))
+        sessionStorage.setItem('active_classroom_student', JSON.stringify(matched))
         setTicketInfo(matched)
         if (matched.course) {
           setSelectedCourse(matched.course)
@@ -193,44 +102,39 @@ export default function CourseContent() {
         name: 'Enrolled Student',
         course: selectedCourse || 'Aviation Course',
       }
-      sessionStorage.setItem('active_admission_ticket', JSON.stringify(studentRecord))
+      sessionStorage.setItem('active_classroom_student', JSON.stringify(studentRecord))
       setTicketInfo(studentRecord)
       setTicketError('')
       return
     }
 
-    setTicketError('Invalid Ticket ID. Kripya naya admission lein ya sahi ID enter karein.')
+    setTicketError('Invalid Ticket ID. Please verify your credentials or complete an enrollment.')
   }
 
-  // Selected Course filter
-  const initialCourse = searchParams.get('course') || ticketInfo?.course || 'Aviation Course'
-  const [selectedCourse, setSelectedCourse] = useState(initialCourse)
+  // Selected Course filter: strictly locked to student's enrolled course
+  const enrolledCourse = ticketInfo?.course || searchParams.get('course') || 'Aviation Course'
+  const [selectedCourse, setSelectedCourse] = useState(enrolledCourse)
   const [filterType, setFilterType] = useState('all') // 'all' | 'video' | 'pdf'
 
-  // Materials & loading
-  const [materials, setMaterials] = useState(initialDefaultMaterials)
+  // Dynamic Materials only (NO static defaults)
+  const [materials, setMaterials] = useState([])
   const [loading, setLoading] = useState(true)
 
   // Active playing video state
   const [activeVideo, setActiveVideo] = useState(null)
 
-  // Active PDF viewer modal state
-  const [activePdf, setActivePdf] = useState(null)
-
-  // Fetch materials from Python backend with localStorage fallback
+  // Fetch dynamic materials from Python backend
   const fetchMaterials = async () => {
     setLoading(true)
     try {
       const res = await fetch(`${getApiBase()}/api/materials`)
       if (res.ok) {
         const data = await res.json()
-        if (data.data && data.data.length > 0) {
-          setMaterials(data.data)
-          localStorage.setItem('lms_study_materials', JSON.stringify(data.data))
-        }
+        setMaterials(data.data || [])
+      } else {
+        setMaterials([])
       }
     } catch {
-      // Backend not connected: Do not show stale local materials
       setMaterials([])
     } finally {
       setLoading(false)
@@ -241,22 +145,33 @@ export default function CourseContent() {
     fetchMaterials()
   }, [])
 
-  // Update selected course when search param changes
+  // Strictly enforce enrolled course: student cannot switch or view another course's content
   useEffect(() => {
-    const courseParam = searchParams.get('course')
-    if (courseParam) {
-      setSelectedCourse(courseParam)
+    if (ticketInfo?.course) {
+      setSelectedCourse(ticketInfo.course)
+    } else {
+      const courseParam = searchParams.get('course')
+      if (courseParam) {
+        setSelectedCourse(courseParam)
+      }
     }
-  }, [searchParams])
+  }, [ticketInfo, searchParams])
 
-  // Filter materials for the selected course
-  const normalizedCourse = selectedCourse.toLowerCase().trim()
+  const handleExitClassroom = () => {
+    try {
+      sessionStorage.removeItem('active_classroom_student')
+      sessionStorage.removeItem('active_admission_ticket')
+    } catch {}
+    setTicketInfo(null)
+    navigate('/classroom')
+  }
+
+  // Filter materials by selected course and type
+  const normalizedCourse = (selectedCourse || '').toLowerCase().trim()
   const filteredMaterials = materials.filter((m) => {
     const mCourse = (m.course || '').toLowerCase().trim()
-    // Match partial names (e.g. "Aviation" matches "Aviation Course" or "Aviation - Cabin Crew")
     const courseMatches =
       mCourse === normalizedCourse ||
-      normalizedCourse.includes(mCourse) ||
       mCourse.includes(normalizedCourse) ||
       (normalizedCourse.includes('aviation') && mCourse.includes('aviation')) ||
       (normalizedCourse.includes('travel') && mCourse.includes('travel')) ||
@@ -283,19 +198,7 @@ export default function CourseContent() {
         normalizedCourse.includes((m.course || '').toLowerCase().slice(0, 5)))
   ).length
 
-  // Quick course list for selector
-  const availableCourses = [
-    'Aviation Course',
-    'Tour and Travel Course',
-    'Maritime and Hotel Services Course',
-    'AI & Digital Marketing Course',
-  ]
 
-  const handleSelectCourse = (c) => {
-    setSelectedCourse(c)
-    setSearchParams({ course: c })
-    setActiveVideo(null)
-  }
 
   // ─── IF NOT ENROLLED: ACCESS RESTRICTED SCREEN ─────────────────────────────
   if (!ticketInfo) {
@@ -319,7 +222,7 @@ export default function CourseContent() {
             </h1>
 
             <p className="text-xs sm:text-sm text-gray-600 leading-relaxed mb-6">
-              Yeh <strong>Video Lectures</strong> aur <strong>PDF Study Notes</strong> sirf verified enrolled students ke liye reserved hain. Direct access allowed nahi hai. Study material dekhne ke liye kripya pehle kisi course me <strong>Enroll</strong> karein.
+              These <strong>Video Lectures</strong> and <strong>PDF Study Notes</strong> are strictly reserved for verified enrolled students. Direct access is not allowed. To access the learning materials, please enroll in a course first.
             </p>
 
             {/* Primary Action: Go to Enroll */}
@@ -345,7 +248,7 @@ export default function CourseContent() {
                 Already Enrolled? Enter Ticket ID to Unlock:
               </span>
               <p className="text-[11px] text-gray-400 mb-2.5">
-                Admission submit karne ke baad mila hua Ticket ID (jaise LMS-123456) ya Mobile Number enter karein.
+                Enter your Admission Ticket ID (e.g. LMS-123456) or registered Mobile Number received upon enrollment.
               </p>
 
               <form onSubmit={handleVerifyTicket} className="space-y-2">
@@ -431,17 +334,18 @@ export default function CourseContent() {
               </div>
 
               <div className="flex items-center gap-2 self-end md:self-center">
-                <Link
-                  to="/register"
-                  className="px-4 py-2 bg-white text-emerald-900 hover:bg-emerald-50 font-black text-xs rounded-xl shadow-xs transition"
+                <button
+                  type="button"
+                  onClick={handleExitClassroom}
+                  className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white border border-white/30 font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
                 >
-                  View My Ticket ↗
-                </Link>
+                  Exit Classroom ✕
+                </button>
               </div>
             </div>
           )}
 
-          {/* ─── Hero Header & Course Selector ─── */}
+          {/* ─── Hero Header & Enrolled Course Specialization ─── */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm mb-8">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div>
@@ -452,29 +356,24 @@ export default function CourseContent() {
                   {selectedCourse}
                 </h1>
                 <p className="text-xs sm:text-sm text-gray-500 mt-1 max-w-2xl">
-                  Yahan is course se jude sabhi official <strong>Video Lectures</strong> aur <strong>PDF Study Notes</strong> available hain. Kisi bhi video par click karke direct watch karein.
+                  Official video lectures and certified PDF study materials for this enrolled course. Click on any lesson to start learning.
                 </p>
               </div>
 
-              {/* Course Switcher Pills */}
-              <div className="flex flex-col gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                  Select Subject / Course:
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {availableCourses.map((c) => (
-                    <button
-                      key={c}
-                      onClick={() => handleSelectCourse(c)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
-                        selectedCourse === c
-                          ? 'bg-blue-600 text-white shadow-md'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      {c.replace(' Course', '')}
-                    </button>
-                  ))}
+              {/* Enrolled Specialization Badge (Locked to student's course) */}
+              <div className="flex flex-col sm:items-end justify-center">
+                <div className="px-4 py-3 bg-blue-50/90 border border-blue-200 rounded-2xl flex items-center gap-3 shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-base shadow-sm">
+                    🎓
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 block">
+                      Enrolled Specialization
+                    </span>
+                    <span className="text-xs sm:text-sm font-extrabold text-slate-900">
+                      {selectedCourse}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -515,32 +414,34 @@ export default function CourseContent() {
               </div>
 
               <div className="text-xs text-gray-500 font-medium">
-                Admin se naye videos aur PDFs lagatar update kiye jaate hain.
+                Study materials are managed and updated by the course administration.
               </div>
             </div>
           </div>
 
-          {/* ─── ACTIVE VIDEO PLAYER (THEATER VIEW) ─── */}
+          {/* ─── ACTIVE VIDEO PLAYER (COMPACT & SMALL-SIZED THEATER VIEW) ─── */}
           {activeVideo && (
-            <div className="mb-10 bg-slate-950 rounded-3xl p-4 sm:p-6 shadow-2xl border border-slate-800 text-white animate-fade-in scroll-mt-24" id="video-player">
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+            <div className="mb-10 max-w-xl md:max-w-2xl mx-auto bg-slate-950 rounded-2xl p-3.5 sm:p-5 shadow-2xl border border-slate-800 text-white animate-fade-in scroll-mt-24" id="video-player">
+              <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-800">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
                   <span className="text-xs font-bold uppercase tracking-wider text-red-400">
                     Now Playing
                   </span>
-                  <span className="text-slate-400 text-xs">• {activeVideo.duration}</span>
+                  {activeVideo.duration && (
+                    <span className="text-slate-400 text-xs">• {activeVideo.duration}</span>
+                  )}
                 </div>
                 <button
                   onClick={() => setActiveVideo(null)}
-                  className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer"
                 >
-                  <span>✕</span> Close Player
+                  <span>✕</span> Close
                 </button>
               </div>
 
-              {/* Video Iframe / Player Container */}
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-inner">
+              {/* Compact Video Frame Container */}
+              <div className="relative w-full aspect-video max-h-[360px] rounded-xl overflow-hidden bg-black shadow-inner">
                 {activeVideo.url.includes('youtube') || activeVideo.url.includes('youtu.be') || activeVideo.url.includes('vimeo') ? (
                   <iframe
                     src={getEmbedUrl(activeVideo.url)}
@@ -562,13 +463,13 @@ export default function CourseContent() {
               </div>
 
               {/* Video Details */}
-              <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-lg sm:text-xl font-black text-white">
+                  <h3 className="text-base sm:text-lg font-bold text-white">
                     {activeVideo.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl">
-                    {activeVideo.description || 'Watch full practical training session for this course.'}
+                  <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
+                    {activeVideo.description || 'Practical training session video lesson.'}
                   </p>
                 </div>
 
@@ -577,9 +478,9 @@ export default function CourseContent() {
                     href={activeVideo.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow"
+                    className="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
                   >
-                    <span>📺</span> Open Full Video ↗
+                    <span>📺</span> Open Link ↗
                   </a>
                 </div>
               </div>
@@ -603,20 +504,24 @@ export default function CourseContent() {
                 <p className="text-sm font-bold text-gray-600">Loading course materials...</p>
               </div>
             ) : filteredMaterials.length === 0 ? (
-              <div className="bg-white rounded-3xl p-12 text-center text-gray-500 border border-slate-200 shadow-xs">
-                <div className="text-4xl mb-3">📁</div>
-                <h3 className="text-base font-bold text-gray-800 mb-1">
-                  No materials found for this category yet
+              <div className="bg-white rounded-3xl p-10 sm:p-14 text-center border border-slate-200 shadow-xs max-w-xl mx-auto my-6">
+                <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-3xl mx-auto mb-3">
+                  📚
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-1.5">
+                  No Study Materials Uploaded Yet
                 </h3>
-                <p className="text-xs text-gray-500 max-w-md mx-auto mb-4">
-                  Admin panel se naye Videos aur PDFs jald hi add kiye jayenge. Aap dusre courses ke materials dekh sakte hain.
+                <p className="text-xs sm:text-sm text-gray-500 leading-relaxed max-w-md mx-auto mb-4">
+                  The administrator has not uploaded any study materials (videos or PDFs) for this course yet. Please check back later.
                 </p>
-                <button
-                  onClick={() => setFilterType('all')}
-                  className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl"
-                >
-                  Show All Materials
-                </button>
+                {filterType !== 'all' && (
+                  <button
+                    onClick={() => setFilterType('all')}
+                    className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition cursor-pointer"
+                  >
+                    View All Materials
+                  </button>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -642,47 +547,51 @@ export default function CourseContent() {
                               const el = document.getElementById('video-player')
                               if (el) el.scrollIntoView({ behavior: 'smooth' })
                             }}
-                            className="w-full h-44 bg-gradient-to-tr from-slate-900 via-blue-950 to-indigo-900 flex items-center justify-center relative cursor-pointer group overflow-hidden"
+                            className="w-full h-36 sm:h-40 bg-gradient-to-tr from-slate-900 via-blue-950 to-indigo-900 flex items-center justify-center relative cursor-pointer group overflow-hidden"
                           >
                             {/* Decorative background grid pattern */}
                             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.3)_0,transparent_70%)]" />
 
                             {/* Play Button Icon */}
-                            <div className="w-14 h-14 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg group-hover:scale-115 group-hover:bg-red-500 transition-all duration-300 z-10">
-                              <svg className="w-6 h-6 fill-white translate-x-0.5" viewBox="0 0 24 24">
+                            <div className="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-red-500 transition-all duration-300 z-10">
+                              <svg className="w-5 h-5 fill-white translate-x-0.5" viewBox="0 0 24 24">
                                 <path d="M8 5v14l11-7z" />
                               </svg>
                             </div>
 
                             {/* Video duration badge */}
-                            <span className="absolute bottom-3 right-3 bg-black/80 text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded-md backdrop-blur-xs z-10">
-                              ⏱ {item.duration || 'Video'}
-                            </span>
+                            {item.duration && (
+                              <span className="absolute bottom-2.5 right-2.5 bg-black/80 text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded-md backdrop-blur-xs z-10">
+                                ⏱ {item.duration}
+                              </span>
+                            )}
 
                             {/* Click to play tooltip */}
-                            <span className="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-full shadow-xs tracking-wider z-10 flex items-center gap-1">
+                            <span className="absolute top-2.5 left-2.5 bg-red-500 text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-full shadow-xs tracking-wider z-10 flex items-center gap-1">
                               <span>▶</span> Video Lecture
                             </span>
                           </div>
                         ) : (
-                          <div className="w-full h-44 bg-gradient-to-tr from-emerald-900 via-teal-900 to-slate-900 flex items-center justify-center relative overflow-hidden">
-                            <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-3xl text-emerald-300 shadow-inner">
+                          <div className="w-full h-36 sm:h-40 bg-gradient-to-tr from-emerald-900 via-teal-900 to-slate-900 flex items-center justify-center relative overflow-hidden">
+                            <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-3xl text-emerald-300 shadow-inner">
                               📄
                             </div>
 
-                            <span className="absolute bottom-3 right-3 bg-black/80 text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded-md backdrop-blur-xs">
-                              📖 {item.duration || 'PDF Document'}
-                            </span>
+                            {item.duration && (
+                              <span className="absolute bottom-2.5 right-2.5 bg-black/80 text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded-md backdrop-blur-xs">
+                                📖 {item.duration}
+                              </span>
+                            )}
 
-                            <span className="absolute top-3 left-3 bg-emerald-500 text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-full shadow-xs tracking-wider flex items-center gap-1">
-                              <span>📄</span> PDF Study Notes
+                            <span className="absolute top-2.5 left-2.5 bg-emerald-500 text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-full shadow-xs tracking-wider flex items-center gap-1">
+                              <span>📄</span> PDF Document
                             </span>
                           </div>
                         )}
                       </div>
 
                       {/* Content Info */}
-                      <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
                         <div>
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-50 text-blue-700">
@@ -690,12 +599,12 @@ export default function CourseContent() {
                             </span>
                           </div>
 
-                          <h3 className="font-extrabold text-base text-gray-900 line-clamp-2 mb-2 leading-snug">
+                          <h3 className="font-extrabold text-sm sm:text-base text-gray-900 line-clamp-2 mb-2 leading-snug">
                             {item.title}
                           </h3>
 
                           <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed mb-4">
-                            {item.description || 'Full lecture curriculum and certified industry material.'}
+                            {item.description || 'Certified curriculum and official lesson material.'}
                           </p>
                         </div>
 
@@ -708,20 +617,20 @@ export default function CourseContent() {
                                 const el = document.getElementById('video-player')
                                 if (el) el.scrollIntoView({ behavior: 'smooth' })
                               }}
-                              className="flex-1 py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
+                              className="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
                             >
                               <span>▶</span>
-                              <span>{isPlaying ? 'Currently Playing' : 'Watch Video Now'}</span>
+                              <span>{isPlaying ? 'Currently Playing' : 'Watch Video'}</span>
                             </button>
                           ) : (
                             <a
                               href={item.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
+                              className="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
                             >
                               <span>👁</span>
-                              <span>Open & Read PDF ↗</span>
+                              <span>Open PDF ↗</span>
                             </a>
                           )}
 
@@ -731,7 +640,7 @@ export default function CourseContent() {
                             rel="noopener noreferrer"
                             download={!isVideo}
                             title="Direct link / Download"
-                            className="p-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition flex items-center justify-center text-xs"
+                            className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition flex items-center justify-center text-xs"
                           >
                             ↗
                           </a>
@@ -755,7 +664,7 @@ export default function CourseContent() {
                   Need Help or Have Doubts About This Course?
                 </h3>
                 <p className="text-xs text-white/80 mt-0.5">
-                  Hamare faculty and counselor team se direct guidance lene ke liye WhatsApp ya Call karein.
+                  Connect directly with our faculty and counseling team for guidance via WhatsApp or phone call.
                 </p>
               </div>
             </div>

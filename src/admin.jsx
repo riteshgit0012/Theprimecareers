@@ -163,7 +163,7 @@ export default function AdminDashboard() {
       }
     } catch {
       setBackendConnected(false)
-      alert('⚠️ Backend server connect nahi hai! Material save nahi ho saka.')
+      alert('⚠️ Backend server is not connected. Material could not be saved.')
     }
 
     setMaterialModalOpen(false)
@@ -181,17 +181,17 @@ export default function AdminDashboard() {
 
   // Handle Delete Material
   const handleDeleteMaterial = async (id) => {
-    if (!window.confirm('Kya aap sach me is material ko delete karna chahte hain?')) return
+    if (!window.confirm('Are you sure you want to delete this study material?')) return
     try {
       const res = await fetch(`${getApiBase()}/api/materials/${id}`, { method: 'DELETE' })
       if (res.ok) {
         setMessage('Material removed!')
       } else {
-        alert('Server error: Material delete nahi ho saka.')
+        alert('Server error: Material could not be deleted.')
       }
     } catch {
       setBackendConnected(false)
-      alert('⚠️ Backend server connect nahi hai! Material delete nahi ho saka.')
+      alert('⚠️ Backend server is not connected. Material could not be deleted.')
     }
     setTimeout(() => setMessage(''), 3000)
     fetchData()
@@ -762,7 +762,7 @@ export default function AdminDashboard() {
                     Course Study Materials (Videos & PDFs)
                   </h2>
                   <p className="text-xs text-gray-500 mt-0.5">
-                    Yahan se aap kisi bhi course ke liye naye Video Lectures aur PDF Notes add ya remove kar sakte hain.
+                    Upload, manage, or remove video lectures and PDF study notes for each course.
                   </p>
                 </div>
 
@@ -800,10 +800,10 @@ export default function AdminDashboard() {
                 <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-rose-300">
                   <span className="text-4xl block mb-2">🔌</span>
                   <h3 className="text-base sm:text-lg font-bold text-gray-800">
-                    Study Materials Show Nahi Ho Rahe
+                    Study Materials Unavailable
                   </h3>
                   <p className="text-xs sm:text-sm text-rose-600 mt-1 max-w-md mx-auto">
-                    Backend server connect nahi hai, isliye lecture videos aur PDF notes show nahi ho rahe hain.
+                    Backend server is disconnected. Lecture videos and PDF notes cannot be loaded.
                   </p>
                   <button
                     onClick={fetchData}
@@ -1215,7 +1215,7 @@ export default function AdminDashboard() {
                 />
                 <span className="text-[11px] text-gray-400 mt-1 block">
                   {materialForm.type === 'video'
-                    ? 'YouTube, Vimeo ya direct MP4 video link enter karein. Student screen par video click karne par live chalega.'
+                    ? 'Enter a YouTube, Vimeo, or direct video link. Students will be able to play it directly in their classroom.'
                     : 'Kisi bhi PDF ka direct link paste karein. User isko direct read ya download kar sakega.'}
                 </span>
               </div>

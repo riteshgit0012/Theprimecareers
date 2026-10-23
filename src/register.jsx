@@ -96,6 +96,7 @@ export default function Register() {
   const [copied, setCopied] = useState(false)
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
+  const [showServerOfflineModal, setShowServerOfflineModal] = useState(false)
 
   const handleCopyId = () => {
     if (appId) {
@@ -122,6 +123,32 @@ export default function Register() {
       course: initialCourse || 'Aviation Course',
       hostelRequired: true,
     })
+  }
+
+  // Automatic ticket cut and transition to classroom
+  const handleContinueToClassroom = () => {
+    const selectedCourse = (ticketData || form).course || 'Aviation Course'
+    const ticketId = appId || (ticketData && ticketData.id) || 'LMS-CONFIRMED'
+    const studentRecord = {
+      ...(ticketData || form),
+      id: ticketId,
+      course: selectedCourse,
+    }
+
+    try {
+      // 1. Establish classroom active session
+      sessionStorage.setItem('active_classroom_student', JSON.stringify(studentRecord))
+      // 2. Automatic ticket cut: remove active registration ticket so ticket is cut
+      sessionStorage.removeItem('active_admission_ticket')
+    } catch {}
+
+    // Reset registration form state
+    setTicketData(null)
+    setSubmitted(false)
+    setAppId('')
+
+    // Navigate directly to classroom
+    navigate(`/classroom?course=${encodeURIComponent(selectedCourse)}&ticket=${encodeURIComponent(ticketId)}`)
   }
 
   const handleChange = (e) => {
@@ -153,55 +180,53 @@ export default function Register() {
     }
 
     setLoading(true)
+
+    // Immediate backend connectivity check (<1500ms timeout)
+    let isServerConnected = false
+    try {
+      const healthRes = await fetch(`${getApiBase()}/api/health`, {
+        method: 'GET',
+        cache: 'no-store',
+        signal: AbortSignal.timeout(1500),
+      })
+      if (healthRes.ok) {
+        const healthData = await healthRes.json().catch(() => null)
+        if (healthData && (healthData.status === 'ok' || healthData.backend)) {
+          isServerConnected = true
+        }
+      }
+    } catch {
+      isServerConnected = false
+    }
+
+    // If backend is not started/connected, immediately show popup and halt
+    if (!isServerConnected) {
+      setLoading(false)
+      setShowServerOfflineModal(true)
+      return
+    }
+
     const generatedId = `LMS-${Date.now().toString().slice(-6)}`
     setAppId(generatedId)
 
-    let sent = false
-
-    // 1. Try local Express backend first (if running on http://localhost:5000)
+    // Backend is online - submit directly to Python FastAPI endpoint instantly
     try {
       const backendRes = await fetch(`${getApiBase()}/api/enroll`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, applicationId: generatedId }),
+        signal: AbortSignal.timeout(3000),
       })
-      if (backendRes.ok) {
-        sent = true
+
+      if (!backendRes.ok) {
+        setLoading(false)
+        setShowServerOfflineModal(true)
+        return
       }
     } catch {
-      // Local backend not running, fallback to FormSubmit cloud service
-    }
-
-    // 2. Cloud Email Delivery fallback (FormSubmit)
-    if (!sent) {
-      try {
-        const payload = {
-          _subject: `New Admission Registration: ${form.name} (${form.course}) - Ref: ${generatedId}`,
-          _template: 'table',
-          _captcha: 'false',
-          'Application ID': generatedId,
-          'Student Name': form.name,
-          "Father's Name": form.fatherName,
-          City: form.city,
-          District: form.district,
-          Email: form.email,
-          'Mobile / WhatsApp': form.phone,
-          'Selected Course': form.course,
-          'Submitted At': new Date().toLocaleString(),
-        }
-
-        // Target administration endpoint (configured to send directly to admin)
-        await fetch('https://formsubmit.co/ajax/ritesh224172@gmail.com', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify(payload),
-        })
-      } catch (cloudErr) {
-        console.warn('Submission network fallback:', cloudErr)
-      }
+      setLoading(false)
+      setShowServerOfflineModal(true)
+      return
     }
 
     const finalRecord = {
@@ -220,7 +245,7 @@ export default function Register() {
       // Ignore storage errors
     }
 
-    // Save active ticket in sessionStorage so it NEVER disappears on reload
+    // Save active ticket in sessionStorage so it is visible until student clicks Continue
     try {
       sessionStorage.setItem('active_admission_ticket', JSON.stringify(finalRecord))
     } catch {
@@ -391,14 +416,10 @@ export default function Register() {
                   <div className="max-w-md mx-auto mt-5 space-y-3">
                     <button
                       type="button"
-                      onClick={() => {
-                        const selectedCourse = (ticketData || form).course || 'Aviation Course'
-                        const ticketId = appId || (ticketData && ticketData.id) || 'LMS-CONFIRMED'
-                        navigate(`/classroom?course=${encodeURIComponent(selectedCourse)}&ticket=${encodeURIComponent(ticketId)}`)
-                      }}
+                      onClick={handleContinueToClassroom}
                       className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 active:scale-98 text-white font-black text-sm sm:text-base rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
                     >
-                      <span>Continue to Videos & PDF Notes</span>
+                      <span>Continue to Classroom</span>
                       <span className="text-xl group-hover:translate-x-1.5 transition-transform font-bold">Continue →</span>
                     </button>
 
@@ -623,6 +644,46 @@ export default function Register() {
           </div>
         </div>
       </main>
+
+      {/* ─── SERVER NOT CONNECTED POPUP MODAL ─── */}
+      {showServerOfflineModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-red-100 text-center relative animate-scale-up">
+            <div className="w-16 h-16 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-3xl mx-auto mb-4 shadow-sm border border-red-200">
+              ⚠️
+            </div>
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-700 rounded-full text-xs font-bold uppercase tracking-wider mb-2 border border-red-200">
+              ● Server Not Connected
+            </span>
+
+            <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight mb-2">
+              Server Not Connected!
+            </h3>
+
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed mb-5">
+              The admission backend server is currently offline or unreachable. Please start the backend server before submitting your admission application.
+            </p>
+
+            <div className="bg-slate-900 text-slate-200 rounded-2xl p-3.5 text-left font-mono text-xs mb-6 border border-slate-800">
+              <div className="text-[10px] text-slate-400 uppercase tracking-widest mb-1.5 font-sans font-bold">
+                Run this command in terminal to start:
+              </div>
+              <div className="text-emerald-400 font-bold select-all bg-black/40 px-3 py-2 rounded-lg">
+                python backend/app.py
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowServerOfflineModal(false)}
+              className="w-full py-3.5 px-6 bg-red-600 hover:bg-red-700 active:scale-98 text-white font-black text-sm rounded-xl shadow-lg transition cursor-pointer"
+            >
+              ✕ Close / Dismiss
+            </button>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
