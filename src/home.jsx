@@ -1,0 +1,425 @@
+import { useState, useEffect, useCallback } from 'react'
+import { Link } from 'react-router-dom'
+import { Navbar, Footer } from './components'
+
+// ─── HERO SLIDER IMAGES ────────────────────────────────────────────────────────
+// 📌 SLIDER ME APNI IMAGES ADD KARNE KA TAREEKA:
+// 1. Apni images ko 'src/assets/' folder me rakhein (e.g., slide1.png, banner.jpg)
+// 2. Niche import karein:
+//    import myImage1 from './assets/my-slide1.png'
+//    import myImage2 from './assets/my-slide2.png'
+// 3. 'slides' array me add karein:
+//    { image: myImage1, title: 'Slide Title', link: '/courses' }
+import myImage1 from './assets/my-slide1.png'
+import myImage2 from './assets/my-slide2.png'
+import myImage3 from './assets/my-slide3.png'
+import myImage4 from './assets/my-slide4.png'
+const slides = [
+  // Yahan aap apni images add kar sakte hain:
+  { image: myImage1, title: 'Course 1' },
+  { image: myImage2, title: 'Course 2' },
+  { image: myImage3, title: 'Course 3' },
+  { image: myImage4, title: 'Course 4' },
+]
+
+// ─── HERO SECTION ─────────────────────────────────────────────────────────────
+function Hero() {
+  const [current, setCurrent] = useState(0)
+  const [animating, setAnimating] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+  const [touchStart, setTouchStart] = useState(null)
+  const [touchEnd, setTouchEnd] = useState(null)
+
+  const hasSlides = slides && slides.length > 0
+
+  const goTo = useCallback((idx) => {
+    if (!hasSlides || animating) return
+    setAnimating(true)
+    setTimeout(() => {
+      setCurrent(idx)
+      setAnimating(false)
+    }, 350)
+  }, [animating, hasSlides])
+
+  const next = useCallback(() => {
+    if (!hasSlides) return
+    goTo((current + 1) % slides.length)
+  }, [current, goTo, hasSlides])
+
+  const prev = useCallback(() => {
+    if (!hasSlides) return
+    goTo((current - 1 + slides.length) % slides.length)
+  }, [current, goTo, hasSlides])
+
+  // Auto-slide every 5 seconds
+  useEffect(() => {
+    if (!hasSlides || isPaused) return
+    const timer = setInterval(next, 5000)
+    return () => clearInterval(timer)
+  }, [next, isPaused, hasSlides])
+
+  const minSwipeDistance = 50
+  const onTouchStart = (e) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    const distance = touchStart - touchEnd
+    if (distance > minSwipeDistance) {
+      next()
+    } else if (distance < -minSwipeDistance) {
+      prev()
+    }
+  }
+
+  // Agar abhi koi slide add nahi hai, gracefully placeholder render hoga:
+  if (!hasSlides) {
+    return (
+      <section className="relative w-full pt-14 bg-gradient-to-b from-slate-900 to-slate-950 text-white select-none">
+        <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+          <div className="p-8 sm:p-12 border-2 border-dashed border-blue-500/40 rounded-3xl bg-white/5 backdrop-blur-xs shadow-lg">
+            <div className="text-4xl mb-3">🖼️</div>
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-2">
+              Hero Slider Area (Images Removed)
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto mb-4 leading-relaxed">
+              Slide images remove kar di gayi hain. Aap jab chahein <code className="bg-blue-900/60 text-blue-200 px-2 py-0.5 rounded font-mono text-xs">src/home.jsx</code> me <code className="bg-blue-900/60 text-blue-200 px-2 py-0.5 rounded font-mono text-xs">slides</code> array ke andar apni images add kar sakte hain.
+            </p>
+            <div className="inline-flex items-center gap-2 text-xs text-blue-300 bg-blue-950/70 border border-blue-800/60 px-4 py-2 rounded-full font-mono">
+              💡 Code: src/home.jsx ➔ const slides = [ &#123; image: myImg, title: "...", link: "..." &#125; ]
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section
+      className="relative w-full pt-14 bg-slate-950 overflow-hidden select-none"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
+      <div className="relative w-full aspect-[1.95/1] sm:aspect-auto sm:h-[65vh] lg:h-[78vh] min-h-[210px] xs:min-h-[250px] sm:min-h-[480px] lg:min-h-[580px] max-h-[850px]">
+        {slides.map((s, i) => (
+          <div
+            key={i}
+            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+              i === current ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+            }`}
+          >
+            <img
+              src={s.image}
+              alt={s.title || `slide-${i + 1}`}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              className="w-full h-full object-cover object-center bg-slate-950"
+            />
+          </div>
+        ))}
+
+        {/* Prev / Next navigation arrows */}
+        {slides.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                prev()
+              }}
+              aria-label="Previous slide"
+              className="absolute left-1.5 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-11 sm:h-11 bg-black/45 hover:bg-black/75 text-white backdrop-blur-xs rounded-full flex items-center justify-center text-sm sm:text-2xl transition-all duration-200 border border-white/20 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                next()
+              }}
+              aria-label="Next slide"
+              className="absolute right-1.5 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-11 sm:h-11 bg-black/45 hover:bg-black/75 text-white backdrop-blur-xs rounded-full flex items-center justify-center text-sm sm:text-2xl transition-all duration-200 border border-white/20 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
+            >
+              ›
+            </button>
+
+            {/* Dot indicators */}
+            <div className="absolute bottom-1.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 sm:gap-2 bg-black/45 backdrop-blur-md px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-white/15">
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    goTo(i)
+                  }}
+                  aria-label={`Go to slide ${i + 1}`}
+                  className={`transition-all duration-300 rounded-full cursor-pointer ${
+                    i === current ? 'w-3.5 sm:w-7 h-1.5 sm:h-2 bg-sky-400' : 'w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white/60 hover:bg-white'
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Slide counter */}
+            <div className="hidden sm:block absolute bottom-4 right-4 z-20 text-white/80 text-xs font-semibold bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/15">
+              {String(current + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+            </div>
+          </>
+        )}
+      </div>
+    </section>
+  )
+}
+
+// ─── STATS SECTION ────────────────────────────────────────────────────────────
+// Yahan background color rgb(237, 243, 255) set kiya gaya hai aur marquee effect lagaya gaya hai:
+function Stats() {
+  const stats = [
+    { icon: '👨‍🎓', number: '10+', label: 'Students Enrolled' },
+    { icon: '📚', number: '4+', label: 'Courses Available' },
+    { icon: '👨‍🏫', number: '7+', label: 'Expert Instructors' },
+    { icon: '🏆', number: '5+', label: 'Years of Excellence' },
+  ]
+
+  // Multiple items loop for continuous scrolling effect
+  const marqueeItems = [...stats, ...stats, ...stats]
+
+  return (
+    <section
+      className="py-4 sm:py-5 border-y border-blue-100/80 overflow-hidden select-none"
+      style={{ backgroundColor: 'rgb(237, 243, 255)' }}
+    >
+      <marquee
+        behavior="scroll"
+        direction="left"
+        scrollamount="7"
+        onMouseEnter={(e) => e.currentTarget.stop()}
+        onMouseLeave={(e) => e.currentTarget.start()}
+        className="cursor-pointer"
+      >
+        <div className="inline-flex items-center gap-12 sm:gap-20 py-1">
+          {marqueeItems.map((stat, idx) => (
+            <div
+              key={idx}
+              className="inline-flex items-center gap-4 sm:gap-4 px-2"
+            >
+              <span className="text-3xl sm:text-4xl">{stat.icon}</span>
+              <div className="text-left">
+                <div className="text-xl sm:text-3xl font-extrabold text-blue-950 leading-tight">
+                  {stat.number}
+                </div>
+                <div className="text-blue-800 font-bold text-xs sm:text-sm whitespace-nowrap">
+                  {stat.label}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </marquee>
+    </section>
+  )
+}
+
+// ─── FEATURES SECTION ─────────────────────────────────────────────────────────
+function Features() {
+  const features = [
+    {
+      icon: '🎥',
+      title: 'Live & Recorded Classes',
+      desc: 'Attend live interactive sessions or watch recorded lectures at your own pace anytime, anywhere.',
+      color: 'bg-blue-50 border-blue-100',
+      iconBg: 'bg-blue-100',
+    },
+    {
+      icon: '📜',
+      title: 'Govt. Recognized Certificates',
+      desc: 'Earn certificates that are recognized by leading institutions and employers across India.',
+      color: 'bg-indigo-50 border-indigo-100',
+      iconBg: 'bg-indigo-100',
+    },
+    {
+      icon: '🧑‍💻',
+      title: 'Expert Faculty',
+      desc: 'Learn from highly qualified and experienced educators with proven track records.',
+      color: 'bg-purple-50 border-purple-100',
+      iconBg: 'bg-purple-100',
+    },
+    {
+      icon: '📱',
+      title: 'Learn on Any Device',
+      desc: 'Access your courses seamlessly on mobile, tablet, or desktop — fully responsive platform.',
+      color: 'bg-green-50 border-green-100',
+      iconBg: 'bg-green-100',
+    },
+    {
+      icon: '🤝',
+      title: 'Placement Assistance',
+      desc: 'Get dedicated support with job placement, resume building, and interview preparation.',
+      color: 'bg-orange-50 border-orange-100',
+      iconBg: 'bg-orange-100',
+    },
+    {
+      icon: '💰',
+      title: 'Affordable Fee Structure',
+      desc: 'Quality education at pocket-friendly prices with flexible EMI options available.',
+      color: 'bg-teal-50 border-teal-100',
+      iconBg: 'bg-teal-100',
+    },
+  ]
+
+  return (
+    <section className="py-8 sm:py-14 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8">
+          <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Why Choose Us</span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-1 mb-2.5">
+            Everything You Need to Succeed
+          </h2>
+          <p className="text-gray-500 max-w-xl mx-auto text-xs sm:text-sm">
+            We provide a complete learning ecosystem that empowers every student to reach their full potential.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+          {features.map((f) => (
+            <div
+              key={f.title}
+              className={`p-4 sm:p-6 rounded-2xl border-2 ${f.color} hover:shadow-lg transition-all duration-300 group`}
+            >
+              <div className={`w-11 h-11 ${f.iconBg} rounded-xl flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition-transform`}>
+                {f.icon}
+              </div>
+              <h3 className="text-base font-bold text-gray-800 mb-1.5">{f.title}</h3>
+              <p className="text-gray-500 text-xs leading-relaxed">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── TESTIMONIALS ─────────────────────────────────────────────────────────────
+function Testimonials() {
+  const testimonials = [
+    {
+      name: 'Rahul Sharma',
+      role: 'DCA Graduate, 2024',
+      text: 'The Prime Careers changed my life! The DCA course was well-structured and the faculty was extremely helpful. I got placed in a good company within 2 months of completing the course.',
+      avatar: 'RS',
+      rating: 5,
+      color: 'bg-blue-600',
+    },
+    {
+      name: 'Priya Singh',
+      role: 'Web Dev Student',
+      text: 'The Full Stack Development course is absolutely brilliant. Live classes are very interactive and the doubt sessions are very helpful. Highly recommend to everyone!',
+      avatar: 'PS',
+      rating: 5,
+      color: 'bg-pink-500',
+    },
+    {
+      name: 'Amit Kumar',
+      role: 'Tally Course, 2023',
+      text: 'I learned Tally with GST here and now I handle accounts for a CA firm. The practical approach and real-world examples made learning very easy and effective.',
+      avatar: 'AK',
+      rating: 5,
+      color: 'bg-green-600',
+    },
+  ]
+
+  return (
+    <section className="py-12 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8">
+          <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Student Reviews</span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-1 mb-2.5">
+            What Our Students Say
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+          {testimonials.map((t) => (
+            <div
+              key={t.name}
+              className="bg-gray-50 rounded-2xl p-5 sm:p-6 border border-gray-100 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
+            >
+              <div className="flex mb-4">
+                {[...Array(t.rating)].map((_, i) => (
+                  <span key={i} className="text-yellow-400 text-lg">★</span>
+                ))}
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 ${t.color} rounded-full flex items-center justify-center text-white font-bold text-sm`}>
+                  {t.avatar}
+                </div>
+                <div>
+                  <p className="font-bold text-gray-800 text-sm">{t.name}</p>
+                  <p className="text-gray-400 text-xs">{t.role}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── CTA BANNER ───────────────────────────────────────────────────────────────
+function CTABanner() {
+  return (
+    <section className="py-8 sm:py-12 relative from-blue-700  overflow-hidden bg-[rgb(237,243,255)]">
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-0 left-1/4 w-64 h-64 bg-black rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-white rounded-full blur-2xl"></div>
+      </div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <h2 className="text-xl sm:text-2xl font-extrabold text-black mb-2">
+          Start Your Learning Journey Today!
+        </h2>
+        <p className="text-black-100 text-xs sm:text-sm mb-6 max-w-xl mx-auto leading-relaxed">
+          Join over 50+ students who have transformed their careers with The prime Careers. 
+          Enroll now and take the first step towards your dream career.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-xs sm:max-w-none mx-auto">
+          <Link to="/courses"
+            className="w-full sm:w-auto px-6 py-2.5 sm:py-3 bg-white text-blue-700 font-bold rounded-xl hover:shadow-md hover:bg-blue-50 transition-all text-xs sm:text-sm text-center"
+          >
+            Browse Courses
+          </Link>
+          <Link to="/contact"
+            className="w-full sm:w-auto px-6 py-2.5 sm:py-3 bg-transparent text-white font-bold rounded-xl border border-white hover:bg-white/10 transition-all text-xs sm:text-sm text-center"
+          >
+            Talk to Counselor
+          </Link>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── HOME PAGE (Main Export) ───────────────────────────────────────────────────
+export default function Home() {
+  return (
+    <>
+      <Navbar />
+      <Hero />
+      <Stats />
+      <Features />
+      <Testimonials />
+      <CTABanner />
+      <Footer />
+    </>
+  )
+}

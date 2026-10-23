@@ -1,0 +1,76 @@
+[
+  {
+    "id": "maritime",
+    "title": "Maritime and Hotel Services Course",
+    "tagline": "Global Careers. Hospitality & Beyond.",
+    "iconType": "ship",
+    "image": "hotel",
+    "highlights": [
+      "Maritime Operations",
+      "Hospitality Management",
+      "Hotel Front Office & Housekeeping",
+      "Food & Beverage Services"
+    ],
+    "duration": "6 to 12 Months",
+    "eligibility": "10th / 12th Pass or Any Degree",
+    "facilities": [
+    
+      "🚢 International Luxury Cruise Liner Protocol & STCW Safety Training",
+      "🏨 Hands-on Practical Sessions in 5-Star Hotel Setup Labs",
+      "👔 Complete Professional Hotelier / Cruise Service Uniform Kit Included",
+      "📜 Globally Valid Maritime & Hospitality Certificate",
+      "🤝 Placement Opportunities in Luxury Cruises & 5-Star Hotel Chains (Taj, Marriott, Hyatt)"
+    ],
+    "syllabus": [
+      "Front Office Systems, Reception & Guest Hospitality Management",
+      "Food & Beverage Operations, Fine Dining Etiquette & Bar Management",
+      "Housekeeping Standards, Room Management & Quality Control",
+      "Shipboard Safety, Maritime Customs & International Port Formalities"
+    ],
+    "careerRoles": "Cruise Hospitality Crew, Hotel Front Office Executive, Guest Relations Officer, F&B Supervisor",
+    "theme": {
+      "bgGradient": "from-teal-100/90 via-emerald-50/40 to-white",
+      "cardBorder": "border-teal-200/80",
+      "iconBg": "bg-[#0d9488]",
+      "btnBg": "bg-[#0d9488] hover:bg-[#0f766e]",
+      "checkColor": "text-[#0d9488]"
+    }
+  },
+  {
+    "id": "ai-marketing",
+    "title": "AI & Digital Marketing Course",
+    "tagline": "Learn Today. Lead Tomorrow.",
+    "iconType": "chip",
+    "image": "ai",
+    "highlights": [
+      "Digital Marketing Fundamentals",
+      "SEO & Content Strategy",
+      "Social Media Marketing",
+      "AI Tools & Automation"
+    ],
+    "duration": "4 to 6 Months",
+    "eligibility": "12th Pass or Any Graduate / College Students",
+    "facilities": [
+      "🏠 Free Hostel & Accommodation — No Rent! (रहना बिल्कुल मुफ़्त, कोई किराया नहीं)",
+      "🤖 Practical Training with Top AI Tools (ChatGPT, Midjourney, Claude, Make.com)",
+      "📈 Live Ad Campaigns with Real Budgets on Google, Meta & LinkedIn",
+      "💻 High-Speed Computer Lab & Lifetime LMS Video Recordings Access",
+      "📜 Google, Meta & HubSpot Recognized Industry Certifications",
+      "🤝 100% Placement Support & Paid Client Internship Opportunities"
+    ],
+    "syllabus": [
+      "Search Engine Optimization (SEO) & High-Ranking Content Strategy",
+      "Performance Marketing: Google Search, Display & YouTube Ads",
+      "Social Media Marketing (Instagram, Facebook, LinkedIn Growth)",
+      "AI-Powered Copywriting, Graphic Generation & Marketing Automation"
+    ],
+    "careerRoles": "Digital Marketing Specialist, SEO Analyst, Social Media Manager, AI Content Strategist, Media Buyer",
+    "theme": {
+      "bgGradient": "from-indigo-100/90 via-purple-50/40 to-white",
+      "cardBorder": "border-indigo-200/80",
+      "iconBg": "bg-[#4f46e5]",
+      "btnBg": "bg-[#4f46e5] hover:bg-[#4338ca]",
+      "checkColor": "text-[#4f46e5]"
+    }
+  }
+]
