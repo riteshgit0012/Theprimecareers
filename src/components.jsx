@@ -33,30 +33,30 @@ export function Navbar() {
         scrolled ? 'bg-white shadow-lg' : 'bg-white/95 backdrop-blur-md shadow-sm'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
+      <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div className="flex items-center justify-between h-14 sm:h-16 lg:h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group">
+          <Link to="/" className="flex items-center gap-2.5 lg:gap-3 group">
             <img
               src={planeLogo}
               alt="The Prime Career Logo"
-              className="w-8 h-8 object-contain transition-transform duration-200 group-hover:scale-105"
+              className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 object-contain transition-transform duration-200 group-hover:scale-105"
             />
             <div className="leading-tight">
-              <span className="text-blue-700 font-extrabold text-base tracking-tight">The</span>
-              <span className="text-indigo-500 font-extrabold text-base tracking-tight"> Prime Career</span>
+              <span className="text-blue-700 font-extrabold text-base sm:text-lg lg:text-xl tracking-tight">The</span>
+              <span className="text-indigo-500 font-extrabold text-base sm:text-lg lg:text-xl tracking-tight"> Prime Career</span>
             </div>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1 lg:gap-2">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                className={`px-3 py-1.5 lg:px-3.5 lg:py-2 rounded-lg lg:rounded-xl text-xs lg:text-sm xl:text-base font-semibold transition-all duration-200 ${
                   location.pathname === link.path
-                    ? 'text-blue-700 bg-blue-50'
+                    ? 'text-blue-700 bg-blue-50 font-bold'
                     : 'text-gray-600 hover:text-blue-700 hover:bg-blue-50'
                 }`}
               >
@@ -66,16 +66,16 @@ export function Navbar() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2 lg:gap-3">
             <Link
               to="/login"
-              className="px-3 py-1.5 text-xs font-semibold text-blue-700 border border-blue-600 rounded-lg hover:bg-blue-50 transition-all duration-200"
+              className="px-3 py-1.5 lg:px-4 lg:py-2 text-xs lg:text-sm xl:text-base font-semibold text-blue-700 border border-blue-600 rounded-lg lg:rounded-xl hover:bg-blue-50 transition-all duration-200"
             >
               Login
             </Link>
             <Link
               to="/register"
-              className="px-3.5 py-1.5 text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg hover:from-blue-700 hover:to-indigo-700 shadow-xs hover:shadow-md transition-all duration-200"
+              className="px-3.5 py-1.5 lg:px-5 lg:py-2 text-xs lg:text-sm xl:text-base font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg lg:rounded-xl hover:from-blue-700 hover:to-indigo-700 shadow-xs hover:shadow-md transition-all duration-200"
             >
               Enroll Now
             </Link>
@@ -142,18 +142,18 @@ export function Navbar() {
 export function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-10 lg:py-16 xl:py-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10 xl:gap-12">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <img src={planeLogo} alt="The Prime Career Logo" className="w-8 h-8 object-contain" />
+            <div className="flex items-center gap-2.5 mb-3.5">
+              <img src={planeLogo} alt="The Prime Career Logo" className="w-8 h-8 lg:w-10 lg:h-10 object-contain" />
               <div>
-                <span className="text-white font-extrabold text-base">The</span>
-                <span className="text-blue-400 font-extrabold text-base"> Prime Career</span>
+                <span className="text-white font-extrabold text-base lg:text-lg xl:text-xl">The</span>
+                <span className="text-blue-400 font-extrabold text-base lg:text-lg xl:text-xl"> Prime Career</span>
               </div>
             </div>
-            <p className="text-xs text-gray-400 leading-relaxed mb-3">
+            <p className="text-xs lg:text-sm text-gray-400 leading-relaxed mb-4">
               Empowering students with quality education and skill-based training since 2009.
             </p>
             <div className="flex gap-2">

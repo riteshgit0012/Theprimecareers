@@ -97,7 +97,7 @@ function FAQsHero() {
   return (
     <section className="pt-24 pb-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-white relative overflow-hidden">
       <div className="absolute top-10 right-0 w-72 h-72 bg-blue-100 rounded-full opacity-40 blur-3xl"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center">
         <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Got Questions?</span>
         <h1 className="text-2xl sm:text-4xl font-extrabold text-gray-900 mt-2 mb-3">
           Frequently Asked{' '}

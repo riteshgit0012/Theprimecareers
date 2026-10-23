@@ -5,7 +5,7 @@ function ContactHero() {
   return (
     <section className="pt-24 pb-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-white relative overflow-hidden">
       <div className="absolute top-10 right-0 w-72 h-72 bg-indigo-100 rounded-full opacity-40 blur-3xl"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center">
         <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Get In Touch</span>
         <h1 className="text-2xl sm:text-4xl font-extrabold text-gray-900 mt-2 mb-3">
           We'd Love to{' '}
@@ -67,7 +67,7 @@ function ContactMain() {
 
   return (
     <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         {/* Contact Info Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {contactInfo.map((info) => (

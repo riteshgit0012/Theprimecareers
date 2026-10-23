@@ -1,102 +1,12 @@
 [
   {
-    "id": "mat-av-1",
+    "id": "mat-1792746567",
     "course": "Aviation Course",
     "type": "video",
-    "title": "Cabin Crew Safety Procedures & In-Flight Demonstration",
-    "url": "https://www.youtube.com/watch?v=0kE2u8f7B2c",
-    "duration": "14 mins",
-    "description": "Comprehensive practical demonstration of pre-flight safety briefing, oxygen mask protocol, emergency exits, and life-vest instructions.",
-    "createdAt": "2026-10-22T10:00:00Z"
-  },
-  {
-    "id": "mat-av-2",
-    "course": "Aviation Course",
-    "type": "video",
-    "title": "Airport Ground Staff & Boarding Gate Operations",
-    "url": "https://www.youtube.com/watch?v=kYJvSg1H9bM",
-    "duration": "18 mins",
-    "description": "Learn passenger handling, check-in baggage protocols, boarding pass verification, and gate management in busy airport terminals.",
-    "createdAt": "2026-10-22T10:05:00Z"
-  },
-  {
-    "id": "mat-av-3",
-    "course": "Aviation Course",
-    "type": "pdf",
-    "title": "Aviation Fundamentals & Flight Safety Regulations Handbook",
-    "url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-    "duration": "48 Pages",
-    "description": "Official IATA-aligned study guide covering aviation terminology, flight codes, airport zones, and emergency preparedness.",
-    "createdAt": "2026-10-22T10:10:00Z"
-  },
-  {
-    "id": "mat-av-4",
-    "course": "Aviation Course",
-    "type": "pdf",
-    "title": "Cabin Crew Grooming & Professional Etiquette Guide",
-    "url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-    "duration": "24 Pages",
-    "description": "Standard operating procedures for uniform presentation, body language, passenger communication, and conflict resolution.",
-    "createdAt": "2026-10-22T10:15:00Z"
-  },
-  {
-    "id": "mat-tr-1",
-    "course": "Tour and Travel Course",
-    "type": "video",
-    "title": "Tour & Travel Management - Complete Overview",
-    "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
-    "duration": "16 mins",
-    "description": "Industry insights on how international tourism packages are created, costed, and executed for leisure and business groups.",
-    "createdAt": "2026-10-22T10:20:00Z"
-  },
-  {
-    "id": "mat-tr-2",
-    "course": "Tour and Travel Course",
-    "type": "pdf",
-    "title": "Global Tour Planning, Itinerary Design & Ticketing Manual",
-    "url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-    "duration": "52 Pages",
-    "description": "Step-by-step handbook on GDS reservation codes, visa guidelines, currency conversion, and luxury itinerary planning.",
-    "createdAt": "2026-10-22T10:25:00Z"
-  },
-  {
-    "id": "mat-mr-1",
-    "course": "Maritime and Hotel Services Course",
-    "type": "video",
-    "title": "Luxury Cruise Ship Operations & Five-Star Hospitality",
-    "url": "https://www.youtube.com/watch?v=fJ9rUzIMcZQ",
-    "duration": "20 mins",
-    "description": "Explore shipboard duties, STCW safety guidelines, guest relations, and fine dining operations aboard international cruise liners.",
-    "createdAt": "2026-10-22T10:30:00Z"
-  },
-  {
-    "id": "mat-mr-2",
-    "course": "Maritime and Hotel Services Course",
-    "type": "pdf",
-    "title": "Maritime Hospitality & Food & Beverage Standards",
-    "url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-    "duration": "36 Pages",
-    "description": "Comprehensive reference guide for maritime hospitality, bar management, room service protocols, and guest etiquette.",
-    "createdAt": "2026-10-22T10:35:00Z"
-  },
-  {
-    "id": "mat-ai-1",
-    "course": "AI & Digital Marketing Course",
-    "type": "video",
-    "title": "Digital Marketing Foundations & AI Workflow Automation",
-    "url": "https://www.youtube.com/watch?v=bixR-KIJKYM",
-    "duration": "25 mins",
-    "description": "Learn search engine optimization (SEO), performance marketing on Meta & Google Ads, and how AI tools automate content creation.",
-    "createdAt": "2026-10-22T10:40:00Z"
-  },
-  {
-    "id": "mat-ai-2",
-    "course": "AI & Digital Marketing Course",
-    "type": "pdf",
-    "title": "Modern AI Marketing Playbook & SEO Checklist",
-    "url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-    "duration": "40 Pages",
-    "description": "High-impact prompts, keyword research templates, and social media campaign blueprints for digital marketers.",
-    "createdAt": "2026-10-22T10:45:00Z"
+    "title": "testing purpose",
+    "url": "https://youtu.be/8GudgjrX1aI?si=a7pd6kwALHSmj7dY",
+    "duration": "10 min",
+    "description": "bhbfvribfviesdf ejfvijnfvinfv",
+    "createdAt": "2026-10-23T14:39:27.651702"
   }
 ]

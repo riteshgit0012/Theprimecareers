@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { getApiBase } from './apiConfig'
 import { Link, useNavigate } from 'react-router-dom'
 import slide1 from './assets/slide1.jpg'
@@ -8,6 +8,31 @@ export default function Login() {
   const [form, setForm] = useState({ id: 'admin', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [backendStatus, setBackendStatus] = useState('checking') // 'checking' | 'connected' | 'disconnected'
+
+  // Health check for backend
+  const checkHealth = useCallback(async () => {
+    setBackendStatus('checking')
+    try {
+      const res = await fetch(`${getApiBase()}/api/health`, { method: 'GET' })
+      if (res.ok) {
+        setBackendStatus('connected')
+        setError('')
+      } else {
+        setBackendStatus('disconnected')
+      }
+    } catch {
+      setBackendStatus('disconnected')
+    }
+  }, [])
+
+  useEffect(() => {
+    // Purge any stale offline fallback token
+    if (localStorage.getItem('lms_admin_auth') === 'admin-token-offline') {
+      localStorage.removeItem('lms_admin_auth')
+    }
+    checkHealth()
+  }, [checkHealth])
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -26,12 +51,14 @@ export default function Login() {
       return
     }
 
+    if (backendStatus === 'disconnected') {
+      setError('⚠️ Backend server is not connected ....')
+      return
+    }
+
     setLoading(true)
     setError('')
 
-    let authenticated = false
-
-    // 1. Try Python Flask backend (http://localhost:5000/api/admin/login)
     try {
       const res = await fetch(`${getApiBase()}/api/admin/login`, {
         method: 'POST',
@@ -41,27 +68,15 @@ export default function Login() {
       const data = await res.json()
       if (res.ok && data.success) {
         localStorage.setItem('lms_admin_auth', data.token || 'admin-token')
-        authenticated = true
+        navigate('/admin')
       } else {
         setError(data.message || 'Invalid Username or Password.')
       }
     } catch {
-      // 2. Offline fallback check if Python server is not yet running
-      if (
-        (form.id.toLowerCase() === 'admin' || form.id.toLowerCase() === 'admin@lms.com') &&
-        form.password === 'admin@0025'
-      ) {
-        localStorage.setItem('lms_admin_auth', 'admin-token-offline')
-        authenticated = true
-      } else {
-        setError('Invalid credentials.')
-      }
-    }
-
-    setLoading(false)
-
-    if (authenticated) {
-      navigate('/admin')
+      setBackendStatus('disconnected')
+      setError('⚠️ Backend server connect nahi hai! Kripya check karein ki backend server (port 5000) chalu hai.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -94,7 +109,7 @@ export default function Login() {
         </div>
 
         {/* Title & Subtitle */}
-        <div className="text-center mb-6">
+        <div className="text-center mb-3">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1e3a8a] tracking-tight">
             Welcome Back
           </h1>
@@ -103,9 +118,39 @@ export default function Login() {
           </p>
         </div>
 
+        {/* Backend Status Indicator */}
+        <div className="flex items-center justify-center mb-4">
+          {backendStatus === 'checking' && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-full border border-slate-200">
+              <span className="w-2 h-2 rounded-full bg-slate-400 animate-pulse"></span>
+              Checking Server Status...
+            </span>
+          )}
+          {backendStatus === 'connected' && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Backend Server Connected
+            </span>
+          )}
+          {backendStatus === 'disconnected' && (
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-50 border border-rose-300 text-rose-700 text-xs font-bold rounded-full shadow-xs">
+              {/* <span className="w-2 h-2 rounded-full bg-rose-600"></span> */}
+              {/* <span>Backend Connect Nahi Hai</span>
+              <button
+                type="button"
+                onClick={checkHealth}
+                className="text-[11px] underline text-rose-800 hover:text-rose-950 font-extrabold ml-1 cursor-pointer"
+                title="Retry connection"
+              >
+                Retry 🔄
+              </button> */}
+            </div>
+          )}
+        </div>
+
         {/* Error notification */}
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl text-center">
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-xl text-center leading-relaxed">
             {error}
           </div>
         )}
@@ -148,7 +193,11 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold rounded-xl text-base shadow-md hover:shadow-lg transition-all duration-200 mt-2 flex items-center justify-center gap-2 disabled:opacity-75"
+            className={`w-full py-3.5 text-white font-bold rounded-xl text-base shadow-md hover:shadow-lg transition-all duration-200 mt-2 flex items-center justify-center gap-2 cursor-pointer ${
+              backendStatus === 'disconnected'
+                ? 'bg-rose-600 hover:bg-rose-700'
+                : 'bg-[#2563eb] hover:bg-[#1d4ed8]'
+            } disabled:opacity-75`}
           >
             {loading ? (
               <>
@@ -156,7 +205,7 @@ export default function Login() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
-                Logging in...
+                Connecting...
               </>
             ) : (
               'Login'

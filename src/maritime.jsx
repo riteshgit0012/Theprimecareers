@@ -94,7 +94,7 @@ export default function Maritime() {
 
       <main className="pt-20 pb-20">
         {/* Breadcrumb */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2 text-xs text-gray-500 flex items-center gap-2">
+        <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-4 pb-2 text-xs text-gray-500 flex items-center gap-2">
           <Link to="/" className="hover:text-blue-600 transition">Home</Link>
           <span>›</span>
           <Link to="/courses" className="hover:text-blue-600 transition">Our Courses</Link>
@@ -103,7 +103,7 @@ export default function Maritime() {
         </div>
 
         {/* Hero Section */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+        <section className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-10">
           <div className="bg-gradient-to-r from-teal-50/90 via-emerald-50/50 to-white rounded-3xl border border-teal-100 shadow-sm p-6 sm:p-8 lg:p-10 relative overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-7 z-10">
@@ -168,7 +168,7 @@ export default function Maritime() {
         </section>
 
         {/* Sub-Courses Heading */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-8 text-center">
+        <section className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 mt-4 mb-8 text-center">
           <h2 className="text-xl sm:text-3xl font-extrabold text-[#1a2b49] tracking-tight mb-1.5">
             Explore Maritime & Hotel Services Courses
           </h2>
@@ -179,7 +179,7 @@ export default function Maritime() {
         </section>
 
         {/* 4 Cards Grid */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
             {maritimePrograms.map((p) => (
               <div
@@ -266,7 +266,7 @@ export default function Maritime() {
         </section>
 
         {/* Bottom Banner */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+        <section className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 mt-10">
           {/* <div className="bg-gradient-to-r from-[#0f766e] via-[#0d9488] to-[#115e59] rounded-2xl p-5 sm:p-7 text-white shadow-md flex flex-col sm:flex-row items-center justify-between gap-4"> */}
             {/* <div className="flex items-center gap-3"> */}
               {/* <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center text-xl flex-shrink-0">

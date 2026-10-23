@@ -6,7 +6,7 @@ function AboutHero() {
   return (
     <section className="pt-24 pb-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-white relative overflow-hidden">
       <div className="absolute top-10 right-0 w-72 h-72 bg-blue-100 rounded-full opacity-40 blur-3xl"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="text-center max-w-3xl mx-auto">
           <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">About Us</span>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 mt-2 mb-3 leading-tight">
@@ -28,7 +28,7 @@ function AboutHero() {
 function OurStory() {
   return (
     <section className="py-12 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
           {/* Image side */}
           <div className="relative flex items-center justify-center">
@@ -100,7 +100,7 @@ function Mission() {
 
   return (
     <section className="py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="text-center mb-14">
           <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">What Drives Us</span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-2">
@@ -134,7 +134,7 @@ function Team() {
 
   return (
     <section className="py-12 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="text-center mb-14">
           <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Meet the Team</span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-2 mb-4">

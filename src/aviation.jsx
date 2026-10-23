@@ -90,7 +90,7 @@ export default function Aviation() {
 
       <main className="pt-20 pb-20">
         {/* ─── Breadcrumb ─── */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2 text-xs sm:text-sm text-gray-500 flex items-center gap-2">
+        <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-4 pb-2 text-xs sm:text-sm text-gray-500 flex items-center gap-2">
           <Link to="/" className="hover:text-blue-600 transition">Home</Link>
           <span>›</span>
           <Link to="/courses" className="hover:text-blue-600 transition">Our Courses</Link>
@@ -99,7 +99,7 @@ export default function Aviation() {
         </div>
 
         {/* ─── Hero Section (Exact Image 2 Reference) ─── */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <section className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 sm:py-12">
           <div className="bg-gradient-to-r from-sky-50 via-blue-50/80 to-white rounded-3xl border border-sky-100 shadow-sm p-6 sm:p-10 lg:p-12 relative overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               {/* Left Column */}
@@ -169,7 +169,7 @@ export default function Aviation() {
         </section>
 
         {/* ─── Sub-Courses Section Heading ─── */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-8 text-center">
+        <section className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 mt-4 mb-8 text-center">
           <h2 className="text-xl sm:text-3xl font-extrabold text-[#1a2b49] tracking-tight mb-1.5">
             Explore Aviation Courses
           </h2>
@@ -180,7 +180,7 @@ export default function Aviation() {
         </section>
 
         {/* ─── 4 Aviation Sub-Programs Grid (Exact Image 2 Reference) ─── */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {aviationPrograms.map((p) => (
               <div
@@ -272,7 +272,7 @@ export default function Aviation() {
         </section>
 
         {/* ─── Bottom CTA Banner (Exact Image 2 Reference) ─── */}
-        {/* <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+        {/* <section className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 mt-10">
           <div className="bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#1d4ed8] rounded-2xl p-5 sm:p-7 text-white shadow-md flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden">
             <div className="flex items-center gap-3 z-10">
               <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center text-xl flex-shrink-0">

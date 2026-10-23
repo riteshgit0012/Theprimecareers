@@ -365,17 +365,8 @@ export default function Courses() {
           }
         }
       } catch {
-        // Fallback to local storage if present
-        const local = JSON.parse(localStorage.getItem('lms_dynamic_courses') || '[]')
-        if (local.length > 0) {
-          const mapped = local.map((c) => ({
-            ...c,
-            image: imageMap[c.image] || c.image || aviationImg,
-          }))
-          const staticTitles = new Set(specializedCourses.map((c) => c.title.toLowerCase().trim()))
-          const dynamicCourses = mapped.filter((c) => !staticTitles.has(c.title?.toLowerCase().trim()))
-          setCoursesList([...specializedCourses, ...dynamicCourses])
-        }
+        // Backend not connected: Dynamic courses are NOT shown, only 4 permanent courses
+        setCoursesList(specializedCourses)
       }
     }
     fetchCourses()
@@ -386,7 +377,7 @@ export default function Courses() {
       <Navbar />
 
       <main className="pt-24 pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           {/* ─── Top Header Section (Exact Reference Layout) ─── */}
           <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
             <span className="text-[11px] sm:text-xs font-bold tracking-widest text-slate-500 uppercase block mb-1.5">
@@ -415,7 +406,7 @@ export default function Courses() {
           {/* </div> */}
 
           {/* ─── Courses 2x2 Grid (Dynamic, Sleek Human Style Layout) ─── */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto">
             {coursesList.map((course) => (
               <div
                 key={course.id}

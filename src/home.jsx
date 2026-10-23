@@ -76,10 +76,10 @@ function Hero() {
     }
   }
 
-  // Agar abhi koi slide add nahi hai, gracefully placeholder render hoga:
+  // Graceful placeholder if no slides
   if (!hasSlides) {
     return (
-      <section className="relative w-full pt-14 bg-gradient-to-b from-slate-900 to-slate-950 text-white select-none">
+      <section className="relative w-full pt-14 sm:pt-16 bg-gradient-to-b from-slate-900 to-slate-950 text-white select-none">
         <div className="max-w-4xl mx-auto px-4 py-16 text-center">
           <div className="p-8 sm:p-12 border-2 border-dashed border-blue-500/40 rounded-3xl bg-white/5 backdrop-blur-xs shadow-lg">
             <div className="text-4xl mb-3">🖼️</div>
@@ -100,14 +100,22 @@ function Hero() {
 
   return (
     <section
-      className="relative w-full pt-14 bg-slate-950 overflow-hidden select-none"
+      className="relative w-full pt-14 sm:pt-16 bg-slate-950 overflow-hidden select-none"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      <div className="relative w-full aspect-[1.95/1] sm:aspect-auto sm:h-[65vh] lg:h-[78vh] min-h-[210px] xs:min-h-[250px] sm:min-h-[480px] lg:min-h-[580px] max-h-[850px]">
+      {/* 
+        Responsive container:
+        • Mobile (360-480px): Natural aspect-[1.95/1] preserves the slide banner ratio without cropping.
+        • Tablet (640-1023px): aspect-[2/1] to md:aspect-[2.08/1] fits standard 768px iPads cleanly.
+        • Laptop (1366x768): lg:h-[calc(100vh-4rem)] (~650px) fills the full viewport height.
+        • Desktop (1920x1080): lg:h-[calc(100vh-4rem)] (~940px) fills the complete first fold.
+        • Ultra-wide (2560x1440): scales smoothly up to 1440px max without arbitrary cramping.
+      */}
+      <div className="relative w-full aspect-[1.95/1] xs:aspect-[1.98/1] sm:aspect-[2/1] md:aspect-[2.08/1] lg:aspect-auto lg:h-[calc(100vh-4rem)] lg:min-h-[620px] xl:min-h-[720px] 2xl:min-h-[820px] max-h-[1440px]">
         {slides.map((s, i) => (
           <div
             key={i}
@@ -135,7 +143,7 @@ function Hero() {
                 prev()
               }}
               aria-label="Previous slide"
-              className="absolute left-1.5 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-11 sm:h-11 bg-black/45 hover:bg-black/75 text-white backdrop-blur-xs rounded-full flex items-center justify-center text-sm sm:text-2xl transition-all duration-200 border border-white/20 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
+              className="absolute left-2 sm:left-4 lg:left-6 xl:left-8 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-11 sm:h-11 lg:w-14 lg:h-14 bg-black/45 hover:bg-black/80 text-white backdrop-blur-md rounded-full flex items-center justify-center text-sm sm:text-2xl lg:text-3xl transition-all duration-200 border border-white/20 hover:scale-105 active:scale-95 cursor-pointer shadow-lg"
             >
               ‹
             </button>
@@ -147,13 +155,13 @@ function Hero() {
                 next()
               }}
               aria-label="Next slide"
-              className="absolute right-1.5 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-11 sm:h-11 bg-black/45 hover:bg-black/75 text-white backdrop-blur-xs rounded-full flex items-center justify-center text-sm sm:text-2xl transition-all duration-200 border border-white/20 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
+              className="absolute right-2 sm:right-4 lg:right-6 xl:right-8 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-11 sm:h-11 lg:w-14 lg:h-14 bg-black/45 hover:bg-black/80 text-white backdrop-blur-md rounded-full flex items-center justify-center text-sm sm:text-2xl lg:text-3xl transition-all duration-200 border border-white/20 hover:scale-105 active:scale-95 cursor-pointer shadow-lg"
             >
               ›
             </button>
 
             {/* Dot indicators */}
-            <div className="absolute bottom-1.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 sm:gap-2 bg-black/45 backdrop-blur-md px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-white/15">
+            <div className="absolute bottom-2 sm:bottom-4 lg:bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2.5 lg:gap-3 bg-black/45 backdrop-blur-md px-2.5 sm:px-4 lg:px-5 py-1 sm:py-1.5 lg:py-2 rounded-full border border-white/15 shadow-md">
               {slides.map((_, i) => (
                 <button
                   key={i}
@@ -165,14 +173,16 @@ function Hero() {
                   }}
                   aria-label={`Go to slide ${i + 1}`}
                   className={`transition-all duration-300 rounded-full cursor-pointer ${
-                    i === current ? 'w-3.5 sm:w-7 h-1.5 sm:h-2 bg-sky-400' : 'w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white/60 hover:bg-white'
+                    i === current
+                      ? 'w-4 sm:w-7 lg:w-9 xl:w-11 h-1.5 sm:h-2 lg:h-2.5 bg-sky-400 shadow-xs'
+                      : 'w-1.5 sm:w-2 lg:w-2.5 h-1.5 sm:h-2 lg:h-2.5 bg-white/60 hover:bg-white'
                   }`}
                 />
               ))}
             </div>
 
             {/* Slide counter */}
-            <div className="hidden sm:block absolute bottom-4 right-4 z-20 text-white/80 text-xs font-semibold bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/15">
+            <div className="hidden sm:block absolute bottom-4 lg:bottom-6 right-4 lg:right-8 z-20 text-white/90 text-xs lg:text-sm font-semibold bg-black/45 backdrop-blur-md px-3 lg:px-4 py-1 lg:py-1.5 rounded-full border border-white/15 shadow-md">
               {String(current + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
             </div>
           </>
@@ -183,7 +193,6 @@ function Hero() {
 }
 
 // ─── STATS SECTION ────────────────────────────────────────────────────────────
-// Yahan background color rgb(237, 243, 255) set kiya gaya hai aur marquee effect lagaya gaya hai:
 function Stats() {
   const stats = [
     { icon: '👨‍🎓', number: '10+', label: 'Students Enrolled' },
@@ -197,7 +206,7 @@ function Stats() {
 
   return (
     <section
-      className="py-4 sm:py-5 border-y border-blue-100/80 overflow-hidden select-none"
+      className="py-4 sm:py-6 lg:py-7 xl:py-8 border-y border-blue-100/80 overflow-hidden select-none"
       style={{ backgroundColor: 'rgb(237, 243, 255)' }}
     >
       <marquee
@@ -208,18 +217,18 @@ function Stats() {
         onMouseLeave={(e) => e.currentTarget.start()}
         className="cursor-pointer"
       >
-        <div className="inline-flex items-center gap-12 sm:gap-20 py-1">
+        <div className="inline-flex items-center gap-12 sm:gap-20 lg:gap-28 xl:gap-36 py-1">
           {marqueeItems.map((stat, idx) => (
             <div
               key={idx}
-              className="inline-flex items-center gap-4 sm:gap-4 px-2"
+              className="inline-flex items-center gap-3 sm:gap-4 lg:gap-5 px-2"
             >
-              <span className="text-3xl sm:text-4xl">{stat.icon}</span>
+              <span className="text-3xl sm:text-4xl lg:text-5xl">{stat.icon}</span>
               <div className="text-left">
-                <div className="text-xl sm:text-3xl font-extrabold text-blue-950 leading-tight">
+                <div className="text-xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-blue-950 leading-tight">
                   {stat.number}
                 </div>
-                <div className="text-blue-800 font-bold text-xs sm:text-sm whitespace-nowrap">
+                <div className="text-blue-800 font-bold text-xs sm:text-sm lg:text-base xl:text-lg whitespace-nowrap">
                   {stat.label}
                 </div>
               </div>
@@ -279,28 +288,36 @@ function Features() {
   ]
 
   return (
-    <section className="py-8 sm:py-14 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8">
-          <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Why Choose Us</span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-1 mb-2.5">
+    <section className="py-10 sm:py-16 lg:py-20 xl:py-24 bg-white">
+      <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+          <span className="text-blue-600 font-semibold text-xs sm:text-sm lg:text-base uppercase tracking-widest">
+            Why Choose Us
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-gray-900 mt-2 mb-3 leading-tight">
             Everything You Need to Succeed
           </h2>
-          <p className="text-gray-500 max-w-xl mx-auto text-xs sm:text-sm">
+          <p className="text-gray-500 max-w-xl lg:max-w-2xl 2xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg leading-relaxed">
             We provide a complete learning ecosystem that empowers every student to reach their full potential.
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 xl:gap-10">
           {features.map((f) => (
             <div
               key={f.title}
-              className={`p-4 sm:p-6 rounded-2xl border-2 ${f.color} hover:shadow-lg transition-all duration-300 group`}
+              className={`p-5 sm:p-6 lg:p-8 xl:p-9 rounded-2xl lg:rounded-3xl border-2 ${f.color} hover:shadow-xl transition-all duration-300 group`}
             >
-              <div className={`w-11 h-11 ${f.iconBg} rounded-xl flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition-transform`}>
+              <div
+                className={`w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 ${f.iconBg} rounded-xl lg:rounded-2xl flex items-center justify-center text-xl lg:text-2xl xl:text-3xl mb-4 group-hover:scale-110 transition-transform`}
+              >
                 {f.icon}
               </div>
-              <h3 className="text-base font-bold text-gray-800 mb-1.5">{f.title}</h3>
-              <p className="text-gray-500 text-xs leading-relaxed">{f.desc}</p>
+              <h3 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-gray-800 mb-2">
+                {f.title}
+              </h3>
+              <p className="text-gray-500 text-xs sm:text-sm lg:text-base leading-relaxed">
+                {f.desc}
+              </p>
             </div>
           ))}
         </div>
@@ -339,33 +356,43 @@ function Testimonials() {
   ]
 
   return (
-    <section className="py-12 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8">
-          <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Student Reviews</span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-1 mb-2.5">
+    <section className="py-12 sm:py-16 lg:py-20 xl:py-24 bg-white">
+      <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+          <span className="text-blue-600 font-semibold text-xs sm:text-sm lg:text-base uppercase tracking-widest">
+            Student Reviews
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-gray-900 mt-2 mb-3">
             What Our Students Say
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 xl:gap-10">
           {testimonials.map((t) => (
             <div
               key={t.name}
-              className="bg-gray-50 rounded-2xl p-5 sm:p-6 border border-gray-100 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
+              className="bg-gray-50 rounded-2xl lg:rounded-3xl p-5 sm:p-6 lg:p-8 xl:p-9 border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
             >
-              <div className="flex mb-4">
-                {[...Array(t.rating)].map((_, i) => (
-                  <span key={i} className="text-yellow-400 text-lg">★</span>
-                ))}
+              <div>
+                <div className="flex mb-4">
+                  {[...Array(t.rating)].map((_, i) => (
+                    <span key={i} className="text-yellow-400 text-lg lg:text-xl xl:text-2xl">
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <p className="text-gray-600 text-sm sm:text-base lg:text-lg leading-relaxed mb-6 italic">
+                  "{t.text}"
+                </p>
               </div>
-              <p className="text-gray-600 text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 ${t.color} rounded-full flex items-center justify-center text-white font-bold text-sm`}>
+              <div className="flex items-center gap-3.5">
+                <div
+                  className={`w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 ${t.color} rounded-full flex items-center justify-center text-white font-bold text-sm lg:text-base xl:text-lg`}
+                >
                   {t.avatar}
                 </div>
                 <div>
-                  <p className="font-bold text-gray-800 text-sm">{t.name}</p>
-                  <p className="text-gray-400 text-xs">{t.role}</p>
+                  <p className="font-bold text-gray-800 text-sm lg:text-base xl:text-lg">{t.name}</p>
+                  <p className="text-gray-400 text-xs lg:text-sm">{t.role}</p>
                 </div>
               </div>
             </div>
@@ -379,27 +406,29 @@ function Testimonials() {
 // ─── CTA BANNER ───────────────────────────────────────────────────────────────
 function CTABanner() {
   return (
-    <section className="py-8 sm:py-12 relative from-blue-700  overflow-hidden bg-[rgb(237,243,255)]">
+    <section className="py-10 sm:py-14 lg:py-20 xl:py-24 relative overflow-hidden bg-[rgb(237,243,255)]">
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-1/4 w-64 h-64 bg-black rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-white rounded-full blur-2xl"></div>
+        <div className="absolute top-0 left-1/4 w-72 h-72 lg:w-96 lg:h-96 bg-black rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-60 h-60 lg:w-80 lg:h-80 bg-white rounded-full blur-2xl"></div>
       </div>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <h2 className="text-xl sm:text-2xl font-extrabold text-black mb-2">
+      <div className="max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center relative z-10">
+        <h2 className="text-xl sm:text-2xl lg:text-4xl xl:text-5xl font-extrabold text-black mb-3">
           Start Your Learning Journey Today!
         </h2>
-        <p className="text-black-100 text-xs sm:text-sm mb-6 max-w-xl mx-auto leading-relaxed">
+        <p className="text-gray-700 text-xs sm:text-sm lg:text-base xl:text-lg mb-8 max-w-xl lg:max-w-3xl mx-auto leading-relaxed">
           Join over 50+ students who have transformed their careers with The prime Careers. 
           Enroll now and take the first step towards your dream career.
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-xs sm:max-w-none mx-auto">
-          <Link to="/courses"
-            className="w-full sm:w-auto px-6 py-2.5 sm:py-3 bg-white text-blue-700 font-bold rounded-xl hover:shadow-md hover:bg-blue-50 transition-all text-xs sm:text-sm text-center"
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-5 justify-center max-w-xs sm:max-w-none mx-auto">
+          <Link
+            to="/courses"
+            className="w-full sm:w-auto px-6 py-2.5 sm:py-3.5 lg:px-8 lg:py-4 xl:px-10 xl:py-4.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl lg:rounded-2xl hover:shadow-lg transition-all text-xs sm:text-sm lg:text-base xl:text-lg text-center"
           >
             Browse Courses
           </Link>
-          <Link to="/contact"
-            className="w-full sm:w-auto px-6 py-2.5 sm:py-3 bg-transparent text-white font-bold rounded-xl border border-white hover:bg-white/10 transition-all text-xs sm:text-sm text-center"
+          <Link
+            to="/contact"
+            className="w-full sm:w-auto px-6 py-2.5 sm:py-3.5 lg:px-8 lg:py-4 xl:px-10 xl:py-4.5 bg-white text-blue-700 font-bold rounded-xl lg:rounded-2xl border border-blue-200 hover:bg-blue-50 hover:shadow-md transition-all text-xs sm:text-sm lg:text-base xl:text-lg text-center"
           >
             Talk to Counselor
           </Link>

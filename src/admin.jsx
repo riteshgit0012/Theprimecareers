@@ -22,6 +22,7 @@ export default function AdminDashboard() {
   const [materials, setMaterials] = useState([])
   const [activeTab, setActiveTab] = useState('courses') // 'courses' | 'admissions' | 'materials'
   const [loading, setLoading] = useState(true)
+  const [backendConnected, setBackendConnected] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingCourse, setEditingCourse] = useState(null)
   const [message, setMessage] = useState('')
@@ -59,7 +60,8 @@ export default function AdminDashboard() {
   // Check authentication
   useEffect(() => {
     const auth = localStorage.getItem('lms_admin_auth')
-    if (!auth) {
+    if (!auth || auth === 'admin-token-offline') {
+      localStorage.removeItem('lms_admin_auth')
       navigate('/login')
     }
   }, [navigate])
@@ -67,19 +69,21 @@ export default function AdminDashboard() {
   // Fetch data
   const fetchData = async () => {
     setLoading(true)
+    let isConnected = true
+
     // 1. Fetch courses from Python backend
     try {
       const res = await fetch(`${getApiBase()}/api/courses`)
       if (res.ok) {
         const data = await res.json()
-        if (data.data && data.data.length > 0) {
-          setCourses(data.data)
-        }
+        setCourses(data.data || [])
+      } else {
+        isConnected = false
+        setCourses([])
       }
     } catch {
-      // Backend not running, load from local storage or defaults
-      const local = JSON.parse(localStorage.getItem('lms_dynamic_courses') || '[]')
-      if (local.length > 0) setCourses(local)
+      isConnected = false
+      setCourses([])
     }
 
     // 2. Fetch admissions
@@ -88,10 +92,13 @@ export default function AdminDashboard() {
       if (res.ok) {
         const data = await res.json()
         setAdmissions(data.data || [])
+      } else {
+        isConnected = false
+        setAdmissions([])
       }
     } catch {
-      const localAdmissions = JSON.parse(localStorage.getItem('lms_admissions') || '[]')
-      setAdmissions(localAdmissions)
+      isConnected = false
+      setAdmissions([])
     }
 
     // 3. Fetch study materials (Videos & PDFs)
@@ -100,12 +107,16 @@ export default function AdminDashboard() {
       if (res.ok) {
         const data = await res.json()
         setMaterials(data.data || [])
+      } else {
+        isConnected = false
+        setMaterials([])
       }
     } catch {
-      const localMaterials = JSON.parse(localStorage.getItem('lms_study_materials') || '[]')
-      setMaterials(localMaterials)
+      isConnected = false
+      setMaterials([])
     }
 
+    setBackendConnected(isConnected)
     setLoading(false)
   }
 
@@ -147,13 +158,12 @@ export default function AdminDashboard() {
       })
       if (res.ok) {
         setMessage('Material added successfully!')
+      } else {
+        alert('Server error: Material could not be saved.')
       }
     } catch {
-      // Local fallback
-      const updated = [{ ...payload, id: `mat-${Date.now()}` }, ...materials]
-      setMaterials(updated)
-      localStorage.setItem('lms_study_materials', JSON.stringify(updated))
-      setMessage('Material saved locally!')
+      setBackendConnected(false)
+      alert('⚠️ Backend server connect nahi hai! Material save nahi ho saka.')
     }
 
     setMaterialModalOpen(false)
@@ -173,13 +183,15 @@ export default function AdminDashboard() {
   const handleDeleteMaterial = async (id) => {
     if (!window.confirm('Kya aap sach me is material ko delete karna chahte hain?')) return
     try {
-      await fetch(`${getApiBase()}/api/materials/${id}`, { method: 'DELETE' })
-      setMessage('Material removed!')
+      const res = await fetch(`${getApiBase()}/api/materials/${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        setMessage('Material removed!')
+      } else {
+        alert('Server error: Material delete nahi ho saka.')
+      }
     } catch {
-      const filtered = materials.filter((m) => m.id !== id)
-      setMaterials(filtered)
-      localStorage.setItem('lms_study_materials', JSON.stringify(filtered))
-      setMessage('Material removed locally!')
+      setBackendConnected(false)
+      alert('⚠️ Backend server connect nahi hai! Material delete nahi ho saka.')
     }
     setTimeout(() => setMessage(''), 3000)
     fetchData()
@@ -300,34 +312,26 @@ export default function AdminDashboard() {
     try {
       if (editingCourse) {
         // PUT update
-        await fetch(`${getApiBase()}/api/courses/${editingCourse.id}`, {
+        const res = await fetch(`${getApiBase()}/api/courses/${editingCourse.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         })
-        setMessage('Course updated successfully!')
+        if (res.ok) setMessage('Course updated successfully!')
+        else alert('Server error: Course update nahi ho saka.')
       } else {
         // POST create
-        await fetch(`${getApiBase()}/api/courses`, {
+        const res = await fetch(`${getApiBase()}/api/courses`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         })
-        setMessage('New course added successfully!')
+        if (res.ok) setMessage('New course added successfully!')
+        else alert('Server error: Course create nahi ho saka.')
       }
     } catch {
-      // Local fallback
-      let updatedList = [...courses]
-      if (editingCourse) {
-        updatedList = updatedList.map((c) =>
-          c.id === editingCourse.id ? { ...c, ...payload } : c
-        )
-      } else {
-        updatedList.push({ ...payload, id: `course-${Date.now()}` })
-      }
-      setCourses(updatedList)
-      localStorage.setItem('lms_dynamic_courses', JSON.stringify(updatedList))
-      setMessage('Course saved locally!')
+      setBackendConnected(false)
+      alert('⚠️ Backend server connect nahi hai! Course save nahi ho saka.')
     }
 
     setModalOpen(false)
@@ -339,11 +343,11 @@ export default function AdminDashboard() {
   const handleDeleteCourse = async (id) => {
     if (!window.confirm('Kya aap sach me is course ko delete karna chahte hain?')) return
     try {
-      await fetch(`${getApiBase()}/api/courses/${id}`, { method: 'DELETE' })
+      const res = await fetch(`${getApiBase()}/api/courses/${id}`, { method: 'DELETE' })
+      if (!res.ok) alert('Server error: Course delete nahi ho saka.')
     } catch {
-      const updated = courses.filter((c) => c.id !== id)
-      setCourses(updated)
-      localStorage.setItem('lms_dynamic_courses', JSON.stringify(updated))
+      setBackendConnected(false)
+      alert('⚠️ Backend server connect nahi hai! Course delete nahi ho saka.')
     }
     setMessage('Course removed.')
     setTimeout(() => setMessage(''), 3000)
@@ -354,11 +358,11 @@ export default function AdminDashboard() {
   const handleDeleteAdmission = async (id) => {
     if (!window.confirm('Delete this student application record?')) return
     try {
-      await fetch(`${getApiBase()}/api/admissions/${id}`, { method: 'DELETE' })
+      const res = await fetch(`${getApiBase()}/api/admissions/${id}`, { method: 'DELETE' })
+      if (!res.ok) alert('Server error: Admission record delete nahi ho saka.')
     } catch {
-      const updated = admissions.filter((a) => a.id !== id)
-      setAdmissions(updated)
-      localStorage.setItem('lms_admissions', JSON.stringify(updated))
+      setBackendConnected(false)
+      alert('⚠️ Backend server connect nahi hai! Admission delete nahi ho saka.')
     }
     fetchData()
   }
@@ -401,6 +405,17 @@ export default function AdminDashboard() {
               >
                 <span>🌐</span> Live Courses ↗
               </Link> */}
+              {backendConnected ? (
+                <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Backend Connected
+                </span>
+              ) : (
+                <span className="px-3 py-1.5 bg-rose-50 text-rose-700 border border-rose-300 text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs">
+                  <span className="w-2 h-2 rounded-full bg-rose-600"></span>
+                  Backend Disconnected
+                </span>
+              )}
               <Link
                 to="/"
                 className="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold text-xs rounded-xl transition flex items-center gap-1.5 shadow-xs"
@@ -415,6 +430,29 @@ export default function AdminDashboard() {
               </button>
             </div>
           </div>
+
+          {/* Backend Offline Warning Banner */}
+          {!backendConnected && (
+            <div className="mb-6 p-4 sm:p-5 bg-rose-50 border-2 border-rose-300 rounded-3xl text-rose-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-fade-in">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">⚠️</span>
+                <div>
+                  <h4 className="font-extrabold text-sm sm:text-base text-rose-900">
+                    Backend Server Connect Nahi Hai!
+                  </h4>
+                  <p className="text-xs sm:text-sm text-rose-700 mt-0.5">
+                    Server offline hone ke kaaran dynamic courses, student admissions aur study notes show nahi ho rahe hain. Kripya backend server (port 5000) start karein.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={fetchData}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition cursor-pointer whitespace-nowrap self-end sm:self-auto shadow-sm"
+              >
+                Retry Connection 🔄
+              </button>
+            </div>
+          )}
 
           {/* Feedback banner */}
           {message && (
@@ -483,9 +521,25 @@ export default function AdminDashboard() {
                 <div className="text-center py-12 text-gray-500 font-semibold">
                   Loading courses from Python backend...
                 </div>
+              ) : !backendConnected ? (
+                <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-rose-300">
+                  <span className="text-4xl block mb-2">🔌</span>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-800">
+                    Dynamic Courses Show Nahi Ho Rahe
+                  </h3>
+                  <p className="text-xs sm:text-sm text-rose-600 mt-1 max-w-md mx-auto">
+                    Backend server connect nahi hai, isliye dynamic courses load nahi ho sake. Backend server start karein aur Retry karein.
+                  </p>
+                  <button
+                    onClick={fetchData}
+                    className="mt-4 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl cursor-pointer transition shadow-xs"
+                  >
+                    Retry Connection 🔄
+                  </button>
+                </div>
               ) : courses.length === 0 ? (
                 <div className="bg-white rounded-3xl p-12 text-center text-gray-500 border border-slate-200">
-                  <p className="text-lg font-bold text-gray-700 mb-2">No courses found.</p>
+                  <p className="text-lg font-bold text-gray-700 mb-2">No dynamic courses found.</p>
                   <p className="text-sm mb-4">Click below to add your first dynamic course.</p>
                   <button
                     onClick={() => openModal()}
@@ -568,7 +622,19 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              {admissions.length === 0 ? (
+              {!backendConnected ? (
+                <div className="text-center py-12 bg-white rounded-2xl border-2 border-dashed border-rose-300 p-6">
+                  <span className="text-4xl block mb-2">🔌</span>
+                  <h3 className="text-base font-bold text-gray-800">Student Admissions Show Nahi Ho Rahe</h3>
+                  <p className="text-xs text-rose-600 mt-1">Backend server connect nahi hai, isliye admissions data load nahi ho saka.</p>
+                  <button
+                    onClick={fetchData}
+                    className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl cursor-pointer transition"
+                  >
+                    Retry Connection 🔄
+                  </button>
+                </div>
+              ) : admissions.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 font-semibold">
                   No admission applications received yet.
                 </div>
@@ -729,6 +795,22 @@ export default function AdminDashboard() {
               {loading ? (
                 <div className="text-center py-12 text-gray-500 font-semibold">
                   Loading materials from backend...
+                </div>
+              ) : !backendConnected ? (
+                <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-rose-300">
+                  <span className="text-4xl block mb-2">🔌</span>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-800">
+                    Study Materials Show Nahi Ho Rahe
+                  </h3>
+                  <p className="text-xs sm:text-sm text-rose-600 mt-1 max-w-md mx-auto">
+                    Backend server connect nahi hai, isliye lecture videos aur PDF notes show nahi ho rahe hain.
+                  </p>
+                  <button
+                    onClick={fetchData}
+                    className="mt-4 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl cursor-pointer transition"
+                  >
+                    Retry Connection 🔄
+                  </button>
                 </div>
               ) : materials.length === 0 ? (
                 <div className="bg-white rounded-3xl p-12 text-center text-gray-500 border border-slate-200">

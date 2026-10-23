@@ -230,10 +230,8 @@ export default function CourseContent() {
         }
       }
     } catch {
-      const local = JSON.parse(localStorage.getItem('lms_study_materials') || '[]')
-      if (local.length > 0) {
-        setMaterials(local)
-      }
+      // Backend not connected: Do not show stale local materials
+      setMaterials([])
     } finally {
       setLoading(false)
     }
