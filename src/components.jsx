@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import planeLogo from './assets/plane-logo.png'
+import brandCrest from './assets/brand-crest.png'
 
 // ─── SHARED NAVBAR ────────────────────────────────────────────────────────────
 export function Navbar() {
@@ -38,9 +38,9 @@ export function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 2xl:gap-3 group">
             <img
-              src={planeLogo}
+              src={brandCrest}
               alt="The Prime Career Logo"
-              className="w-8 h-8 2xl:w-10 2xl:h-10 object-contain transition-transform duration-200 group-hover:scale-105"
+              className="w-9 h-9 sm:w-10 sm:h-10 2xl:w-12 2xl:h-12 object-contain transition-transform duration-200 group-hover:scale-105 filter drop-shadow-sm"
             />
             <div className="leading-tight">
               <span className="text-blue-700 font-extrabold text-base 2xl:text-xl tracking-tight">The</span>
@@ -73,11 +73,18 @@ export function Navbar() {
             >
               Login
             </Link>
+            {/* Online Admission text link with green & red blinking animation & tilted stylish angle */}
             <Link
               to="/register"
-              className="px-3.5 py-1.5 2xl:px-5 2xl:py-2 text-xs 2xl:text-base font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg 2xl:rounded-xl hover:from-blue-700 hover:to-indigo-700 shadow-xs hover:shadow-md transition-all duration-200"
+              className="inline-flex items-center gap-1.5 px-2 py-1 text-xs 2xl:text-base font-extrabold animate-blink-green-red transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer transform -rotate-3 hover:-rotate-1"
+              title="Apply for Online Admission"
             >
-              Enroll Now
+              {/* <span className="text-sm 2xl:text-lg transform -rotate-12">
+                ✈
+              </span> */}
+              <span className="font-extrabold tracking-wide italic inline-block">
+                Online Admission
+              </span>
             </Link>
           </div>
 
@@ -123,12 +130,14 @@ export function Navbar() {
               >
                 Login
               </Link>
+              
               <Link
                 to="/register"
                 onClick={() => setMenuOpen(false)}
-                className="flex-1 py-2 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg text-center"
+                className="flex-1 py-2 text-sm font-extrabold animate-blink-green-red text-center flex items-center justify-center gap-1.5 hover:scale-105 transition-transform transform -rotate-2 italic"
               >
-                Enroll Now
+                <span className="text-base transform -rotate-12">✈</span>
+                <span>Online Admission</span>
               </Link>
             </div>
           </div>
@@ -142,34 +151,81 @@ export function Navbar() {
 export function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
-      <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-10 2xl:py-20">
+      <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-9 2xl:px-12 py-10 2xl:py-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 2xl:gap-12">
-          {/* Brand */}
-          <div>
-            <div className="flex items-center gap-2.5 mb-3">
-              <img src={planeLogo} alt="The Prime Career Logo" className="w-8 h-8 2xl:w-10 2xl:h-10 object-contain" />
-              <div>
-                <span className="text-white font-extrabold text-base 2xl:text-xl">The</span>
-                <span className="text-blue-400 font-extrabold text-base 2xl:text-xl"> Prime Career</span>
-              </div>
-            </div>
+          {/* Brand Tag: Big Emblem Icon + "The Prime Careers" text underneath */}
+          <div className="pl-0 sm:pl-1 2xl:pl-1.5 -mt-1 sm:-mt-2">
+            <Link
+              to="/"
+              className="inline-flex flex-col items-center group mb-3.5 -ml-0.5 sm:-ml-1"
+              title="The Prime Careers"
+            >
+              {/* Crest Icon - Big and fully responsive */}
+              <img
+                src={brandCrest}
+                alt="The Prime Careers Official Crest"
+                className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-30 lg:h-30 2xl:w-44 2xl:h-44 object-contain filter drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-all duration-300 mb-2"
+              />
+              {/* Title underneath the icon */}
+              <span className="text-white font-serif font-bold text-sm sm:text-base 2xl:text-lg tracking-widest uppercase text-center group-hover:text-amber-200 transition-colors whitespace-nowrap">
+                The Prime Careers
+              </span>
+            </Link>
             <p className="text-xs 2xl:text-sm text-gray-400 leading-relaxed mb-3">
               Empowering students with quality education and skill-based training since 2009.
             </p>
-            <div className="flex gap-2">
+            {/* Social Media Links with Official SVG Icons */}
+            <div className="flex gap-2.5 items-center mt-1">
               {[
-                { label: 'f', title: 'Facebook' },
-                { label: 'in', title: 'LinkedIn' },
-                { label: 'yt', title: 'YouTube' },
-                { label: 'tw', title: 'Twitter' },
+                {
+                  title: 'Facebook',
+                  href: '#',
+                  hoverBg: 'hover:bg-[#1877F2]',
+                  icon: (
+                    <svg className="w-4 h-4 fill-currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
+                  ),
+                },
+                {
+                  title: 'LinkedIn',
+                  href: '#',
+                  hoverBg: 'hover:bg-[#0A66C2]',
+                  icon: (
+                    <svg className="w-4 h-4 fill-currentColor" viewBox="0 0 24 24">
+                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                    </svg>
+                  ),
+                },
+                {
+                  title: 'YouTube',
+                  href: '#',
+                  hoverBg: 'hover:bg-[#FF0000]',
+                  icon: (
+                    <svg className="w-4 h-4 fill-currentColor" viewBox="0 0 24 24">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                    </svg>
+                  ),
+                },
+                {
+                  title: 'Twitter / X',
+                  href: '#',
+                  hoverBg: 'hover:bg-black',
+                  icon: (
+                    <svg className="w-3.5 h-3.5 fill-currentColor" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                  ),
+                },
               ].map((s) => (
                 <a
-                  key={s.label}
-                  href="#"
+                  key={s.title}
+                  href={s.href}
                   title={s.title}
-                  className="w-7 h-7 bg-gray-800 hover:bg-blue-600 rounded-lg flex items-center justify-center text-[11px] font-bold transition-colors"
+                  aria-label={s.title}
+                  className={`w-8 h-8 rounded-lg bg-gray-800 text-gray-400 ${s.hoverBg} hover:text-white flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm`}
                 >
-                  {s.label}
+                  {s.icon}
                 </a>
               ))}
             </div>
@@ -217,7 +273,7 @@ export function Footer() {
             <ul className="space-y-2 text-xs text-gray-400">
               <li className="flex items-start gap-2">
                 <span className="mt-0.5">📍</span>
-                <span>J9HG+JM3 Noida , Uttar Pradesh</span>
+                <span>01, H-44, Sector 63, Noida - 201301 , Uttar Pradesh</span>
               </li>
               <li className="flex items-center gap-2">
                 <span>📞</span>

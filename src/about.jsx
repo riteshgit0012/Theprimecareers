@@ -16,7 +16,7 @@ function AboutHero() {
             </span>
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
-            Since 2009, The prime Careers has been committed to delivering world-class education and
+            Since 2020, The prime Careers has been committed to delivering world-class education and
             skill development programs that transform lives and build successful careers.
           </p>
         </div>
@@ -45,12 +45,12 @@ function OurStory() {
           <div>
             <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Our Story</span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-1.5 mb-3">
-              Shaping Futures Since 2009
+              Shaping Futures Since 2020
             </h2>
             <p className="text-gray-500 text-xs sm:text-sm leading-relaxed mb-3">
               The prime Careers was founded with a single mission — to make quality education accessible to every
               student in India. What started as a small computer training center has now grown into a
-              full-fledged learning platform with 200+ courses.
+              full-fledged learning platform with 20+ courses.
             </p>
             <p className="text-gray-500 text-xs sm:text-sm leading-relaxed mb-4">
               We believe every student deserves the best guidance. Our expert faculty, practical curriculum,
@@ -58,7 +58,7 @@ function OurStory() {
             </p>
             <div className="grid grid-cols-2 gap-4">
               {[
-                { num: '50+', label: 'Students Trained' },
+                { num: '5000+', label: 'Students Trained' },
                 { num: '4+', label: 'Courses Offered' },
                 { num: '10+', label: 'Expert Faculty' },
                 { num: '99%', label: 'Placement Rate' },

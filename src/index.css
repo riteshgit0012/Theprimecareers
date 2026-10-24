@@ -57,3 +57,19 @@ ul, ol {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* Blinking Green & Red animation for Online Admission */
+@keyframes blink-green-red {
+  0%, 100% {
+    color: #059669; /* Emerald Green */
+    text-shadow: 0 0 8px rgba(5, 150, 105, 0.35);
+  }
+  50% {
+    color: #dc2626; /* Crimson Red */
+    text-shadow: 0 0 8px rgba(220, 38, 38, 0.35);
+  }
+}
+
+.animate-blink-green-red {
+  animation: blink-green-red 1s infinite ease-in-out;
+}

@@ -103,7 +103,7 @@ function Hero() {
         • Desktop (>= 1536px, 2xl:, e.g. 1920x1080 & 2560px): Grand full viewport height 
           (2xl:h-[calc(100vh-4rem)] 2xl:min-h-[780px] 2xl:max-h-[1440px]) as requested.
       */}
-      <div className="relative w-full aspect-[1.95/1] sm:aspect-auto sm:h-[65vh] lg:h-[72vh] min-h-[210px] xs:min-h-[250px] sm:min-h-[460px] lg:min-h-[580px] max-h-[600px] 2xl:h-[calc(100vh-4rem)] 2xl:min-h-[780px] 2xl:max-h-[1440px]">
+      <div className="relative w-full aspect-[2.35/1] sm:aspect-[2.35/1] md:aspect-[2.35/1] lg:aspect-[2.35/1] xl:aspect-[2.35/1] max-h-[820px] 2xl:max-h-[calc(100vh-4rem)] overflow-hidden select-none bg-slate-950">
         {slides.map((s, i) => (
           <div
             key={i}
@@ -115,62 +115,64 @@ function Hero() {
               src={s.image}
               alt={s.title || `slide-${i + 1}`}
               loading={i === 0 ? 'eager' : 'lazy'}
-              className="w-full h-full object-cover object-center bg-slate-950"
+              className="w-full h-full object-cover object-center select-none"
             />
           </div>
         ))}
 
-        {/* Prev / Next navigation arrows */}
+        {/* Sleek bottom controls: Prev/Next buttons integrated alongside dots so slide text is NEVER covered */}
         {slides.length > 1 && (
           <>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                prev()
-              }}
-              aria-label="Previous slide"
-              className="absolute left-1.5 sm:left-4 2xl:left-8 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-11 sm:h-11 2xl:w-14 2xl:h-14 bg-black/45 hover:bg-black/80 text-white backdrop-blur-md rounded-full flex items-center justify-center text-sm sm:text-2xl 2xl:text-3xl transition-all duration-200 border border-white/20 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
-            >
-              ‹
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                next()
-              }}
-              aria-label="Next slide"
-              className="absolute right-1.5 sm:right-4 2xl:right-8 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-11 sm:h-11 2xl:w-14 2xl:h-14 bg-black/45 hover:bg-black/80 text-white backdrop-blur-md rounded-full flex items-center justify-center text-sm sm:text-2xl 2xl:text-3xl transition-all duration-200 border border-white/20 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
-            >
-              ›
-            </button>
+            <div className="absolute bottom-2 sm:bottom-4 2xl:bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 sm:gap-3 bg-black/60 backdrop-blur-md px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full border border-white/20 shadow-xl">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  prev()
+                }}
+                aria-label="Previous slide"
+                className="w-5 h-5 sm:w-7 sm:h-7 2xl:w-8 2xl:h-8 rounded-full bg-white/20 hover:bg-white/40 active:scale-90 text-white flex items-center justify-center text-xs sm:text-base font-black transition cursor-pointer"
+              >
+                ‹
+              </button>
 
-            {/* Dot indicators */}
-            <div className="absolute bottom-1.5 sm:bottom-4 2xl:bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 sm:gap-2 2xl:gap-3 bg-black/45 backdrop-blur-md px-2 sm:px-3 2xl:px-5 py-0.5 sm:py-1 2xl:py-2 rounded-full border border-white/15">
-              {slides.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    goTo(i)
-                  }}
-                  aria-label={`Go to slide ${i + 1}`}
-                  className={`transition-all duration-300 rounded-full cursor-pointer ${
-                    i === current
-                      ? 'w-3.5 sm:w-7 2xl:w-10 h-1.5 sm:h-2 2xl:h-2.5 bg-sky-400'
-                      : 'w-1.5 sm:w-2 2xl:w-2.5 h-1.5 sm:h-2 2xl:h-2.5 bg-white/60 hover:bg-white'
-                  }`}
-                />
-              ))}
+              <div className="flex items-center gap-1 sm:gap-2">
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      goTo(i)
+                    }}
+                    aria-label={`Go to slide ${i + 1}`}
+                    className={`transition-all duration-300 rounded-full cursor-pointer ${
+                      i === current
+                        ? 'w-4 sm:w-7 2xl:w-9 h-1.5 sm:h-2 2xl:h-2.5 bg-sky-400 shadow-xs'
+                        : 'w-1.5 sm:w-2 2xl:w-2.5 h-1.5 sm:h-2 2xl:h-2.5 bg-white/60 hover:bg-white'
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  next()
+                }}
+                aria-label="Next slide"
+                className="w-5 h-5 sm:w-7 sm:h-7 2xl:w-8 2xl:h-8 rounded-full bg-white/20 hover:bg-white/40 active:scale-90 text-white flex items-center justify-center text-xs sm:text-base font-black transition cursor-pointer"
+              >
+                ›
+              </button>
             </div>
 
             {/* Slide counter */}
-            <div className="hidden sm:block absolute bottom-4 2xl:bottom-6 right-4 2xl:right-8 z-20 text-white/80 text-xs 2xl:text-sm font-semibold bg-black/40 backdrop-blur-md px-2.5 sm:px-3 2xl:px-4 py-1 2xl:py-1.5 rounded-full border border-white/15">
+            <div className="hidden sm:block absolute bottom-4 2xl:bottom-6 right-4 2xl:right-8 z-20 text-white/80 text-xs 2xl:text-sm font-semibold bg-black/45 backdrop-blur-md px-2.5 sm:px-3 2xl:px-4 py-1 2xl:py-1.5 rounded-full border border-white/15">
               {String(current + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
             </div>
           </>

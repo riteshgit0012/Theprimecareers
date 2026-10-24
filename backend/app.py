@@ -120,10 +120,13 @@ Application / Ticket ID : {record['id']}
 Student Name            : {record['name']}
 Father's Name           : {record['fatherName']}
 Selected Course         : {record['course']}
+Qualification           : {record.get('education', 'N/A')} ({record.get('branch', 'N/A')})
 Mobile / WhatsApp       : {record['phone']}
 Student Email           : {record['email']}
-City                    : {record['city']}
-District                : {record['district']}
+State                   : {record.get('state', 'N/A')}
+District                : {record.get('district', 'N/A')}
+City                    : {record.get('city', 'N/A')}
+Pincode                 : {record.get('pincode', 'N/A')}
 Free Hostel Facility    : {'YES (Free Stay Allotted - No Rent)' if record.get('hostelRequired') else 'No'}
 Submission Time         : {record.get('createdAt', datetime.now().strftime('%d %b %Y, %I:%M %p'))}
 Status                  : Pending Verification
@@ -183,6 +186,10 @@ The Prime Career Admissions System
           <td class="value" style="color: #1d4ed8; font-size: 14px;">{record['course']}</td>
         </tr>
         <tr>
+          <td class="label">Qualification & Branch</td>
+          <td class="value">{record.get('education', 'N/A')} ({record.get('branch', 'N/A')})</td>
+        </tr>
+        <tr>
           <td class="label">Mobile / WhatsApp</td>
           <td class="value"><a href="tel:{record['phone']}" style="color: #1d4ed8; text-decoration: none;">{record['phone']}</a></td>
         </tr>
@@ -191,8 +198,12 @@ The Prime Career Admissions System
           <td class="value"><a href="mailto:{record['email']}" style="color: #1d4ed8; text-decoration: none;">{record['email']}</a></td>
         </tr>
         <tr>
-          <td class="label">City & District</td>
-          <td class="value">{record['city']}, {record['district']}</td>
+          <td class="label">State & District</td>
+          <td class="value">{record.get('state', 'N/A')} - {record.get('district', 'N/A')}</td>
+        </tr>
+        <tr>
+          <td class="label">City & Pincode</td>
+          <td class="value">{record.get('city', 'N/A')} - {record.get('pincode', 'N/A')}</td>
         </tr>
         <tr>
           <td class="label">Free Hostel Facility</td>
@@ -441,15 +452,19 @@ def get_admissions():
 def enroll_student(background_tasks: BackgroundTasks, data: dict = Body(default={})):
     name = str(data.get('name', '')).strip()
     father_name = str(data.get('fatherName', '')).strip()
-    city = str(data.get('city', '')).strip()
+    education = str(data.get('education', '12th Pass')).strip()
+    branch = str(data.get('branch', '')).strip()
+    state = str(data.get('state', '')).strip()
     district = str(data.get('district', '')).strip()
+    city = str(data.get('city', '')).strip()
+    pincode = str(data.get('pincode', '')).strip()
     email = str(data.get('email', '')).strip()
     phone = str(data.get('phone', '')).strip()
     course = data.get('course', 'Aviation Course')
     hostel_required = data.get('hostelRequired', True)
 
-    if not all([name, father_name, city, district, email, phone]):
-        return error('All fields are required', 400)
+    if not all([name, father_name, email, phone]):
+        return error('Name, Father name, email and phone are required', 400)
 
     app_id = data.get('applicationId') or f"LMS-{int(time.time())}"
 
@@ -457,8 +472,12 @@ def enroll_student(background_tasks: BackgroundTasks, data: dict = Body(default=
         'id': app_id,
         'name': name,
         'fatherName': father_name,
-        'city': city,
+        'education': education,
+        'branch': branch,
+        'state': state,
         'district': district,
+        'city': city,
+        'pincode': pincode,
         'email': email,
         'phone': phone,
         'course': course,

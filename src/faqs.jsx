@@ -9,7 +9,7 @@ const faqData = [
     faqs: [
       {
         q: 'How can I enroll in a course at The prime Careers?',
-        a: 'You can enroll by visiting our center directly, calling us at +91 98765 43210, or by filling out the contact form on our website. Our counselors will guide you through the admission process.',
+        a: 'You can enroll by visiting our center directly, calling us at +91 72379 48936, or by filling out the contact form on our website. Our counselors will guide you through the admission process.',
       },
       {
         q: 'What is the minimum qualification required for admission?',
@@ -34,8 +34,8 @@ const faqData = [
         a: 'We offer a wide range of courses including Computer Applications, Programming, Digital Marketing, Graphic Design, Tally with GST, Ethical Hacking, and many more. All courses are designed to provide practical, job-ready skills.',
       },
       {
-        q: 'Are the courses available online or only offline?',
-        a: 'We offer both modes — offline (at our centers) and online (live classes via our platform). Some courses also have hybrid options combining both.',
+        q: 'Are the courses available online ',
+        a: 'We offer online modes (live classes , PDF  via our platform). Some courses also have hybrid options .',
       },
       {
         q: 'How are the classes conducted?',
@@ -53,7 +53,7 @@ const faqData = [
     faqs: [
       {
         q: 'What is the fee structure?',
-        a: 'Fees vary by course, starting from ₹2,000 for short-term programs to ₹20,000 for advanced long-term courses. You can check individual course fees on our Courses page or contact us for a detailed fee structure.',
+        a: 'Fees vary by course, starting from ₹15,000 for short-term programs to ₹50,000 for advanced long-term courses. You can check individual course fees on our Courses page or contact us for a detailed fee structure.',
       },
       {
         q: 'Is EMI or installment payment available?',
@@ -63,10 +63,10 @@ const faqData = [
         q: 'Are there any scholarships available?',
         a: 'Yes, we offer merit-based scholarships for deserving students. Special discounts are also available for students from economically weaker sections. Contact us to learn more.',
       },
-      {
-        q: 'What is the refund policy?',
-        a: 'If you withdraw within 7 days of enrollment, 75% of the fee is refunded. No refund is applicable after 7 days. The registration fee is non-refundable.',
-      },
+      // {
+      //   q: 'What is the refund policy?',
+      //   a: 'If you withdraw within 7 days of enrollment, 75% of the fee is refunded. No refund is applicable after 7 days. The registration fee is non-refundable.',
+      // },
     ],
   },
   {

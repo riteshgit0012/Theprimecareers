@@ -38,7 +38,7 @@ function ContactMain() {
     {
       icon: '📍',
       title: 'Visit Us',
-      lines: ['J9HG+JM3 Noida , Uttar Pradesh - 231301'],
+      lines: ['01, H-44, Sector 63, Noida - 201301 , Uttar Pradesh - 231301'],
       color: 'bg-blue-50 border-blue-100',
       iconBg: 'bg-blue-100',
     },
