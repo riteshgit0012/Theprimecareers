@@ -59,7 +59,7 @@ function ContactMain() {
     {
       icon: '🕐',
       title: 'Working Hours',
-      lines: ['Monday – Saturday', '9:00 AM – 6:00 PM'],
+      lines: ['Monday – Saturday', '10:30 AM – 6:30 PM'],
       color: 'bg-orange-50 border-orange-100',
       iconBg: 'bg-orange-100',
     },
