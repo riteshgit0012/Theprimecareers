@@ -121,6 +121,8 @@ export default function Register() {
     branch: '',
     email: '',
     phone: '',
+    password: '',
+    confirmPassword: '',
     state: 'Uttar Pradesh',
     district: 'Varanasi',
     districtInput: 'Varanasi',
@@ -129,6 +131,9 @@ export default function Register() {
     course: initialCourse || 'Aviation Course',
     hostelRequired: true,
   })
+
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const defaultCourses = [
     { title: 'Aviation Course' },
@@ -323,6 +328,18 @@ export default function Register() {
     if (!form.city.trim()) errs.city = 'City / Town is required.'
     if (!form.pincode.trim()) errs.pincode = 'Pincode is required.'
     else if (!/^\d{6}$/.test(form.pincode.trim())) errs.pincode = 'Enter a valid 6-digit Pincode.'
+
+    // Password validation for Student Classroom Login
+    if (!form.password) {
+      errs.password = 'Password is required to access your student classroom.'
+    } else if (form.password.length < 6) {
+      errs.password = 'Password must be at least 6 characters.'
+    }
+    if (!form.confirmPassword) {
+      errs.confirmPassword = 'Please confirm your password.'
+    } else if (form.password !== form.confirmPassword) {
+      errs.confirmPassword = 'Passwords do not match.'
+    }
 
     if (!form.course) errs.course = 'Please select a course.'
     return errs
@@ -865,6 +882,73 @@ export default function Register() {
                         }`}
                       />
                       {errors.pincode && <p className="text-red-500 text-xs mt-1">{errors.pincode}</p>}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 6: Student Classroom Login Credentials */}
+                <div className="p-3.5 bg-blue-50/60 rounded-xl border border-blue-200/70">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-blue-800 mb-1.5 flex items-center gap-1.5">
+                    <span>🔐</span> Create Student Login Password
+                  </h3>
+                  <p className="text-[11px] text-gray-600 mb-3 leading-relaxed">
+                    Set a secure password. You will use your registered <strong>Email</strong> and this <strong>Password</strong> to log in to the Student Classroom and access your subject videos & study PDFs.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {/* Password */}
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">
+                        Create Password *
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          name="password"
+                          value={form.password}
+                          onChange={handleChange}
+                          placeholder="Min. 6 characters"
+                          className={`w-full px-3 py-2 pr-9 rounded-lg border text-xs transition focus:outline-none focus:ring-2 bg-white ${
+                            errors.password ? 'border-red-300 bg-red-50 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-400'
+                          }`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xs cursor-pointer select-none"
+                          title={showPassword ? 'Hide password' : 'Show password'}
+                        >
+                          {showPassword ? '👁️' : '👁️‍🗨️'}
+                        </button>
+                      </div>
+                      {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                    </div>
+
+                    {/* Confirm Password */}
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">
+                        Confirm Password *
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          name="confirmPassword"
+                          value={form.confirmPassword}
+                          onChange={handleChange}
+                          placeholder="Re-enter your password"
+                          className={`w-full px-3 py-2 pr-9 rounded-lg border text-xs transition focus:outline-none focus:ring-2 bg-white ${
+                            errors.confirmPassword ? 'border-red-300 bg-red-50 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-400'
+                          }`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xs cursor-pointer select-none"
+                          title={showConfirmPassword ? 'Hide password' : 'Show password'}
+                        >
+                          {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                        </button>
+                      </div>
+                      {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
                     </div>
                   </div>
                 </div>

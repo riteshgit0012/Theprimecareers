@@ -185,7 +185,7 @@ function Hero() {
 // ─── STATS SECTION ────────────────────────────────────────────────────────────
 function Stats() {
   const stats = [
-    { icon: '👨‍🎓', number: '10+', label: 'Students Enrolled' },
+    { icon: '👨‍🎓', number: '5000+', label: 'Students Enrolled' },
     { icon: '📚', number: '4+', label: 'Courses Available' },
     { icon: '👨‍🏫', number: '7+', label: 'Expert Instructors' },
     { icon: '🏆', number: '5+', label: 'Years of Excellence' },
@@ -395,7 +395,7 @@ function CTABanner() {
           Start Your Learning Journey Today!
         </h2>
         <p className="text-gray-700 text-xs sm:text-sm 2xl:text-lg mb-6 2xl:mb-8 max-w-xl 2xl:max-w-3xl mx-auto leading-relaxed">
-          Join over 50+ students who have transformed their careers with The prime Careers. 
+          Join over 5000+ students who have transformed their careers with The prime Careers. 
           Enroll now and take the first step towards your dream career.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 2xl:gap-5 justify-center max-w-xs sm:max-w-none mx-auto">

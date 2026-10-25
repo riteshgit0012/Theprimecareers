@@ -225,14 +225,20 @@ export default function CourseContent() {
               These <strong>Video Lectures</strong> and <strong>PDF Study Notes</strong> are strictly reserved for verified enrolled students. Direct access is not allowed. To access the learning materials, please enroll in a course first.
             </p>
 
-            {/* Primary Action: Go to Enroll */}
-            <div className="space-y-3 mb-6">
+            {/* Primary Action: Go to Enroll or Login */}
+            <div className="space-y-2.5 mb-6">
               <Link
-                to="/courses"
+                to="/login"
                 className="w-full py-3.5 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-sm rounded-xl shadow-md transition flex items-center justify-center gap-2"
               >
-                <span>Browse Courses & Enroll Now</span>
+                <span>🔑 Sign In with Email & Password</span>
                 <span>→</span>
+              </Link>
+              <Link
+                to="/courses"
+                className="w-full py-2.5 px-6 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2"
+              >
+                <span>Browse Courses & Apply Online</span>
               </Link>
               <Link
                 to="/"

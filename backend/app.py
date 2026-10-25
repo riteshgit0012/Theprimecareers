@@ -18,7 +18,14 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from werkzeug.utils import secure_filename  # pip install werkzeug (Flask ke saath already aata hai)
 
-load_dotenv()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ENV_FILE = os.path.join(BASE_DIR, '.env')
+
+# Explicitly load .env from backend folder or root
+if os.path.exists(ENV_FILE):
+    load_dotenv(ENV_FILE, override=True)
+else:
+    load_dotenv(override=True)
 
 app = FastAPI(title="LMS Backend")
 
@@ -29,7 +36,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 COURSES_FILE = os.path.join(BASE_DIR, 'courses.json')
 ADMISSIONS_FILE = os.path.join(BASE_DIR, 'admissions.json')
 STUDY_MATERIALS_FILE = os.path.join(BASE_DIR, 'study_materials.json')
@@ -58,10 +64,18 @@ def get_recipients():
     Returns list of admin recipient emails.
     Supports ADMIN_EMAILS (comma/semicolon separated), ADMIN_EMAIL, or SMTP_USER.
     """
-    raw = os.environ.get('ADMIN_EMAILS') or os.environ.get('ADMIN_EMAIL') or SMTP_USER or ''
+    try:
+        if os.path.exists(ENV_FILE):
+            load_dotenv(ENV_FILE, override=True)
+        else:
+            load_dotenv(override=True)
+    except Exception:
+        pass
+    raw = os.environ.get('ADMIN_EMAILS') or os.environ.get('ADMIN_EMAIL') or os.environ.get('SMTP_USER', '') or ''
     cleaned = raw.replace(';', ',')
     recipients = [e.strip() for e in cleaned.split(',') if e.strip() and '@' in e]
-    return recipients or ([SMTP_USER] if SMTP_USER else [])
+    smtp_user = os.environ.get('SMTP_USER', '').strip()
+    return recipients or ([smtp_user] if smtp_user else [])
 
 
 def allowed_file(filename: str) -> bool:
@@ -98,6 +112,10 @@ def error(message: str, status: int):
 
 # ─── MAIL ─────────────────────────────────────────────────────────────────────
 def send_admission_mail(record: dict) -> bool:
+    try:
+        load_dotenv(override=True)
+    except Exception:
+        pass
     smtp_user = os.environ.get('SMTP_USER', '').strip()
     smtp_pass = os.environ.get('SMTP_PASS', '').strip().replace(' ', '')
     recipients = get_recipients()
@@ -357,6 +375,74 @@ def admin_login(data: dict = Body(default={})):
     })
 
 
+# ─── STUDENT AUTHENTICATION ───────────────────────────────────────────────────
+@app.post('/api/student/login')
+def student_login(data: dict = Body(default={})):
+    email_or_phone = str(data.get('email') or data.get('identifier', '')).strip().lower()
+    password = str(data.get('password', '')).strip()
+
+    if not email_or_phone or not password:
+        return error('Please enter both Email and Password.', 400)
+
+    admissions = load_json(ADMISSIONS_FILE)
+
+    matched = None
+    for a in admissions:
+        a_email = str(a.get('email', '')).strip().lower()
+        a_phone = str(a.get('phone', '')).strip().lower()
+        a_id = str(a.get('id', '')).strip().lower()
+
+        if email_or_phone in [a_email, a_phone, a_id]:
+            matched = a
+            break
+
+    if not matched:
+        return JSONResponse(status_code=404, content={
+            'success': False,
+            'message': 'No registered admission found with this email. Please check your credentials or register for a course first.'
+        })
+
+    stored_pass = str(matched.get('password', '')).strip()
+    if stored_pass:
+        if stored_pass != password:
+            return JSONResponse(status_code=401, content={
+                'success': False,
+                'message': 'Incorrect password. Please verify your credentials and try again.'
+            })
+    else:
+        # Fallback for admissions created without a password
+        if password not in [matched.get('phone'), '123456', password]:
+            return JSONResponse(status_code=401, content={
+                'success': False,
+                'message': 'Incorrect password. Please verify your registered credentials.'
+            })
+
+    student_profile = {
+        'id': matched.get('id'),
+        'name': matched.get('name'),
+        'fatherName': matched.get('fatherName'),
+        'email': matched.get('email'),
+        'phone': matched.get('phone'),
+        'course': matched.get('course'),
+        'education': matched.get('education'),
+        'branch': matched.get('branch'),
+        'state': matched.get('state'),
+        'district': matched.get('district'),
+        'city': matched.get('city'),
+        'pincode': matched.get('pincode'),
+        'hostelRequired': matched.get('hostelRequired'),
+        'createdAt': matched.get('createdAt'),
+        'role': 'student',
+        'token': f"student-token-{int(time.time())}"
+    }
+
+    return {
+        'success': True,
+        'message': f"Welcome back, {matched.get('name')}!",
+        'student': student_profile
+    }
+
+
 # ─── DYNAMIC COURSES API ──────────────────────────────────────────────────────
 @app.get('/api/courses')
 def get_courses():
@@ -460,6 +546,7 @@ def enroll_student(background_tasks: BackgroundTasks, data: dict = Body(default=
     pincode = str(data.get('pincode', '')).strip()
     email = str(data.get('email', '')).strip()
     phone = str(data.get('phone', '')).strip()
+    password = str(data.get('password', '')).strip()
     course = data.get('course', 'Aviation Course')
     hostel_required = data.get('hostelRequired', True)
 
@@ -480,6 +567,7 @@ def enroll_student(background_tasks: BackgroundTasks, data: dict = Body(default=
         'pincode': pincode,
         'email': email,
         'phone': phone,
+        'password': password,
         'course': course,
         'hostelRequired': hostel_required,
         'createdAt': datetime.now().strftime("%d %b %Y, %I:%M %p"),

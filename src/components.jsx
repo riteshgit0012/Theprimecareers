@@ -6,6 +6,7 @@ import brandCrest from './assets/brand-crest.png'
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [isStudentLoggedIn, setIsStudentLoggedIn] = useState(false)
   const location = useLocation()
 
   useEffect(() => {
@@ -14,9 +15,15 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close menu on route change
+  // Close menu on route change & check student session
   useEffect(() => {
     setMenuOpen(false)
+    try {
+      const student = sessionStorage.getItem('active_classroom_student')
+      setIsStudentLoggedIn(Boolean(student))
+    } catch {
+      setIsStudentLoggedIn(false)
+    }
   }, [location.pathname])
 
   const navLinks = [
@@ -67,15 +74,26 @@ export function Navbar() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-2 2xl:gap-3">
-            <Link
-              to="/login"
-              className="px-3 py-1.5 2xl:px-4 2xl:py-2 text-xs 2xl:text-base font-semibold text-blue-700 border border-blue-600 rounded-lg 2xl:rounded-xl hover:bg-blue-50 transition-all duration-200"
-            >
-              Login
-            </Link>
+            {isStudentLoggedIn ? (
+              <Link
+                to="/classroom"
+                className="px-3 py-1.5 2xl:px-4 2xl:py-2 text-xs 2xl:text-base font-bold text-white bg-blue-600 rounded-lg 2xl:rounded-xl hover:bg-blue-700 shadow-xs transition-all duration-200 flex items-center gap-1.5"
+                title="Go to Enrolled Classroom"
+              >
+                <span>🎓</span>
+                <span>My Classroom</span>
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="px-3 py-1.5 2xl:px-4 2xl:py-2 text-xs 2xl:text-base font-semibold text-blue-700 border border-blue-600 rounded-lg 2xl:rounded-xl hover:bg-blue-50 transition-all duration-200"
+              >
+                Login
+              </Link>
+            )}
             {/* Online Admission text link with green & red blinking animation & tilted stylish angle */}
             <Link
-              to="/register"
+              to="/courses"
               className="inline-flex items-center gap-1.5 px-2 py-1 text-xs 2xl:text-base font-extrabold animate-blink-green-red transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer transform -rotate-3 hover:-rotate-1"
               title="Apply for Online Admission"
             >
@@ -123,16 +141,26 @@ export function Navbar() {
               </Link>
             ))}
             <div className="flex gap-3 mt-3 px-4">
-              <Link
-                to="/login"
-                onClick={() => setMenuOpen(false)}
-                className="flex-1 py-2 text-sm font-semibold text-blue-700 border-2 border-blue-600 rounded-lg hover:bg-blue-50 text-center"
-              >
-                Login
-              </Link>
+              {isStudentLoggedIn ? (
+                <Link
+                  to="/classroom"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex-1 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 text-center flex items-center justify-center gap-1.5"
+                >
+                  <span>🎓 My Classroom</span>
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex-1 py-2 text-sm font-semibold text-blue-700 border-2 border-blue-600 rounded-lg hover:bg-blue-50 text-center"
+                >
+                  Login
+                </Link>
+              )}
               
               <Link
-                to="/register"
+                to="/courses"
                 onClick={() => setMenuOpen(false)}
                 className="flex-1 py-2 text-sm font-extrabold animate-blink-green-red text-center flex items-center justify-center gap-1.5 hover:scale-105 transition-transform transform -rotate-2 italic"
               >
@@ -172,7 +200,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-xs 2xl:text-sm text-gray-400 leading-relaxed mb-3">
-              Empowering students with quality education and skill-based training since 2009.
+              Empowering students with quality education and skill-based training since 2020.
             </p>
             {/* Social Media Links with Official SVG Icons */}
             <div className="flex gap-2.5 items-center mt-1">
@@ -238,7 +266,7 @@ export function Footer() {
               {[
                 { name: 'Home', path: '/' },
                 { name: 'About Us', path: '/about' },
-                { name: 'Courses', path: '/courses' },
+                { name: 'Our Courses', path: '/courses' },
                 { name: 'FAQs', path: '/faqs' },
                 { name: 'Contact', path: '/contact' },
               ].map((link) => (
@@ -248,6 +276,16 @@ export function Footer() {
                   </Link>
                 </li>
               ))}
+              <li className="pt-2">
+                <Link
+                  to="/login?role=admin"
+                  className="text-xs font-semibold text-amber-400/90 hover:text-amber-300 flex items-center gap-1.5 transition-colors"
+                  title="Administrative Portal Access"
+                >
+                  <span>🔐</span>
+                  <span>Admin Access</span>
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -296,13 +334,25 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Bottom bar */}
-      {/* <div className="border-t border-gray-800 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-gray-500">
-          <p>© 2024 The prime Careers. All rights reserved.</p>
-          <p>Designed with ❤️ for Students of India</p>
+      {/* Bottom bar with Admin Access Link */}
+      <div className="border-t border-gray-800 py-4">
+        <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-gray-500">
+          <p>© {new Date().getFullYear()} The Prime Careers Pvt. Ltd. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <Link to="/courses" className="hover:text-blue-400 transition-colors">Our Courses</Link>
+            <span>•</span>
+            <Link to="/login" className="hover:text-blue-400 transition-colors">Student Login</Link>
+            <span>•</span>
+            <Link
+              to="/login?role=admin"
+              className="text-amber-400/90 hover:text-amber-300 font-semibold flex items-center gap-1 transition-colors"
+              title="Access Admin Panel"
+            >
+              <span>🔐</span> Admin Login
+            </Link>
+          </div>
         </div>
-      </div> */}
+      </div>
     </footer>
   )
 }
