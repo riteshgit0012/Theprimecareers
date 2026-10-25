@@ -423,15 +423,15 @@ export default function Login() {
             </button>
 
             {/* Auto-fill Helper */}
-            <div className="text-center pt-2">
+            {/* <div className="text-center pt-2">
               <p
                 onClick={handleFillAdminDemo}
                 className="text-[11px] text-gray-400 hover:text-blue-600 transition cursor-pointer select-none"
                 title="Click to autofill default credentials"
               >
-                Default credentials: admin / admin@0025
+               
               </p>
-            </div>
+            </div> */}
           </form>
         )}
       </div>
