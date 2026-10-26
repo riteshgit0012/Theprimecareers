@@ -355,13 +355,13 @@ export default function Register() {
 
     setLoading(true)
 
-    // Immediate backend connectivity check (<1500ms timeout)
+    // Cloud backend connectivity check (20s timeout to allow Render cloud instance to wake up)
     let isServerConnected = false
     try {
       const healthRes = await fetch(`${getApiBase()}/api/health`, {
         method: 'GET',
         cache: 'no-store',
-        signal: AbortSignal.timeout(1500),
+        signal: AbortSignal.timeout(20000),
       })
       if (healthRes.ok) {
         const healthData = await healthRes.json().catch(() => null)
@@ -391,13 +391,13 @@ export default function Register() {
       applicationId: generatedId,
     }
 
-    // Backend is online - submit directly to Python FastAPI endpoint instantly
+    // Backend is online - submit directly to Python FastAPI endpoint on Render
     try {
       const backendRes = await fetch(`${getApiBase()}/api/enroll`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(submissionPayload),
-        signal: AbortSignal.timeout(3000),
+        signal: AbortSignal.timeout(20000),
       })
 
       if (!backendRes.ok) {

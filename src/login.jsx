@@ -42,7 +42,7 @@ export default function Login() {
       const res = await fetch(`${getApiBase()}/api/health`, {
         method: 'GET',
         cache: 'no-store',
-        signal: AbortSignal.timeout(2000),
+        signal: AbortSignal.timeout(15000),
       })
       if (res.ok) {
         setBackendStatus('connected')

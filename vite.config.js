@@ -8,12 +8,14 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:5000',
+        target: 'https://theprimecareers.onrender.com',
         changeOrigin: true,
+        secure: false,
       },
       '/uploads': {
-        target: 'http://127.0.0.1:5000',
+        target: 'https://theprimecareers.onrender.com',
         changeOrigin: true,
+        secure: false,
       },
     },
     watch: {
@@ -25,4 +27,3 @@ export default defineConfig({
     tailwindcss(),
   ],
 })
-
