@@ -12,6 +12,8 @@ import time
 import shutil
 import smtplib
 import threading
+import urllib.request
+import urllib.error
 from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -116,23 +118,190 @@ def error(message: str, status: int):
     return JSONResponse(status_code=status, content={'success': False, 'error': message})
 
 
-# ─── MAIL ─────────────────────────────────────────────────────────────────────
-def send_admission_mail(record: dict) -> bool:
+# ─── HTTPS EMAIL CLIENTS (FOR RENDER / CLOUD HOSTING) ─────────────────────────
+def send_via_brevo_api(api_key: str, sender_email: str, recipients: list, subject: str, html_body: str, plain_body: str, reply_to: str = "") -> bool:
+    """
+    Sends email via Brevo HTTPS REST API (Port 443).
+    Bypasses Render's outbound SMTP port blocking (ports 25, 465, 587 are blocked on Free Tier).
+    Free tier allows 300 emails/day forever with verified personal sender address (e.g. Gmail).
+    """
     try:
-        load_dotenv(override=True)
-    except Exception:
-        pass
-    smtp_user = os.environ.get('SMTP_USER', '').strip()
-    smtp_pass = os.environ.get('SMTP_PASS', '').strip().replace(' ', '')
-    recipients = get_recipients()
+        url = "https://api.brevo.com/v3/smtp/email"
+        payload = {
+            "sender": {
+                "name": "The Prime Career Admissions",
+                "email": sender_email
+            },
+            "to": [{"email": r.strip()} for r in recipients if r.strip() and '@' in r],
+            "subject": subject,
+            "htmlContent": html_body,
+            "textContent": plain_body
+        }
+        if reply_to and '@' in reply_to:
+            payload["replyTo"] = {"email": reply_to.strip()}
 
-    if not smtp_user or not smtp_pass:
-        print("[MAIL ERROR] SMTP_USER ya SMTP_PASS .env me set nahi hai")
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={
+                "accept": "application/json",
+                "api-key": api_key,
+                "content-type": "application/json",
+                "User-Agent": "LMS-FastAPI-Brevo/1.0"
+            },
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            resp_data = resp.read().decode("utf-8", errors="ignore")
+            print(f"[BREVO SUCCESS] Email dispatched via HTTPS API (Status {resp.status}): {resp_data}")
+            return True
+    except urllib.error.HTTPError as he:
+        body = he.read().decode('utf-8', errors='ignore')
+        print(f"[BREVO HTTP ERROR {he.code}] {body}")
+        return False
+    except Exception as ex:
+        print(f"[BREVO ERROR] {ex}")
         return False
 
+
+def send_via_resend_api(api_key: str, sender_email: str, recipients: list, subject: str, html_body: str, plain_body: str, reply_to: str = "") -> bool:
+    """
+    Sends email via Resend HTTPS REST API (Port 443).
+    """
+    try:
+        url = "https://api.resend.com/emails"
+        from_email = sender_email if ("@" in sender_email and not sender_email.lower().endswith("@gmail.com")) else "The Prime Career Admissions <onboarding@resend.dev>"
+        payload = {
+            "from": from_email,
+            "to": [r.strip() for r in recipients if r.strip() and '@' in r],
+            "subject": subject,
+            "html": html_body,
+            "text": plain_body
+        }
+        if reply_to and '@' in reply_to:
+            payload["reply_to"] = reply_to.strip()
+
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "User-Agent": "LMS-FastAPI-Resend/1.0"
+            },
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            resp_data = resp.read().decode("utf-8", errors="ignore")
+            print(f"[RESEND SUCCESS] Email dispatched via HTTPS API (Status {resp.status}): {resp_data}")
+            return True
+    except urllib.error.HTTPError as he:
+        body = he.read().decode('utf-8', errors='ignore')
+        print(f"[RESEND HTTP ERROR {he.code}] {body}")
+        return False
+    except Exception as ex:
+        print(f"[RESEND ERROR] {ex}")
+        return False
+
+
+def send_via_webhook(webhook_url: str, record: dict, recipients: list, subject: str, html_body: str, plain_body: str) -> bool:
+    """
+    Sends email payload to a custom HTTPS Webhook (e.g. Google Apps Script Web App).
+    """
+    try:
+        payload = {
+            "to": ", ".join(recipients),
+            "recipients": recipients,
+            "subject": subject,
+            "htmlBody": html_body,
+            "html": html_body,
+            "plainBody": plain_body,
+            "text": plain_body,
+            "replyTo": record.get("email", ""),
+            "record": record
+        }
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            webhook_url,
+            data=data,
+            headers={
+                "Content-Type": "application/json",
+                "User-Agent": "LMS-FastAPI-Webhook/1.0"
+            },
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            print(f"[WEBHOOK SUCCESS] Email delivered via Webhook (Status {resp.status})")
+            return True
+    except Exception as ex:
+        print(f"[WEBHOOK ERROR] {ex}")
+        return False
+
+
+def send_via_direct_smtp(smtp_user: str, smtp_pass: str, recipients: list, subject: str, html_body: str, plain_body: str, reply_to: str = "") -> bool:
+    """
+    Sends email via direct Gmail SMTP socket (Port 587 STARTTLS / Port 465 SSL).
+    Note: Works on Localhost or Paid hosting. Blocked on Render Free Tier.
+    """
+    msg = MIMEMultipart('alternative')
+    msg['From'] = f"The Prime Career Admissions <{smtp_user}>"
+    msg['To'] = ", ".join(recipients)
+    msg['Subject'] = subject
+    if reply_to:
+        msg['Reply-To'] = reply_to
+    msg.attach(MIMEText(plain_body, 'plain', 'utf-8'))
+    msg.attach(MIMEText(html_body, 'html', 'utf-8'))
+
+    # Step 1: Port 587 STARTTLS (4-second timeout to avoid locking Render workers)
+    try:
+        print(f"[SMTP 587] Attempting smtp.gmail.com:587 for {len(recipients)} recipient(s)...")
+        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=4)
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
+        server.login(smtp_user, smtp_pass)
+        server.sendmail(smtp_user, recipients, msg.as_string())
+        server.quit()
+        print(f"[SMTP 587 SUCCESS] Email sent to: {', '.join(recipients)}")
+        return True
+    except Exception as e587:
+        print(f"[SMTP 587 WARN] Port 587 failed: {e587}. Trying Port 465 (SSL)...")
+
+    # Step 2: Fallback to Port 465 SSL (4-second timeout)
+    try:
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=4)
+        server.login(smtp_user, smtp_pass)
+        server.sendmail(smtp_user, recipients, msg.as_string())
+        server.quit()
+        print(f"[SMTP 465 SUCCESS] Email sent via SSL 465 to: {', '.join(recipients)}")
+        return True
+    except Exception as e465:
+        print(f"[SMTP 465 ERROR] Port 465 also failed: {e465}")
+        return False
+
+
+# ─── MAIN EMAIL DISPATCHER ────────────────────────────────────────────────────
+def send_admission_mail(record: dict) -> bool:
+    try:
+        if os.path.exists(ENV_FILE):
+            load_dotenv(ENV_FILE, override=True)
+        else:
+            load_dotenv(override=True)
+    except Exception:
+        pass
+
+    recipients = get_recipients()
     if not recipients:
         print("[MAIL ERROR] Koi recipient email address configured nahi hai")
         return False
+
+    smtp_user = os.environ.get('SMTP_USER', '').strip() or 'theprimecareers@gmail.com'
+    smtp_pass = os.environ.get('SMTP_PASS', '').strip().replace(' ', '')
+    brevo_api_key = os.environ.get('BREVO_API_KEY', '').strip()
+    resend_api_key = os.environ.get('RESEND_API_KEY', '').strip()
+    webhook_url = os.environ.get('EMAIL_WEBHOOK_URL', '').strip()
 
     subject = f"🎓 New Admission Ticket #{record['id']} - {record['name']} ({record['course']})"
 
@@ -247,65 +416,114 @@ The Prime Career Admissions System
 </body>
 </html>"""
 
-    msg = MIMEMultipart('alternative')
-    msg['From'] = f"The Prime Career Admissions <{smtp_user}>"
-    msg['To'] = ", ".join(recipients)
-    msg['Subject'] = subject
-    msg['Reply-To'] = record['email']
-    msg.attach(MIMEText(plain_body, 'plain', 'utf-8'))
-    msg.attach(MIMEText(html_body, 'html', 'utf-8'))
+    # 1. PRIORITY 1: Brevo HTTPS REST API (Port 443 - Recommended for Render Free Tier)
+    if brevo_api_key:
+        print(f"[MAIL] Sending via Brevo HTTPS API (Port 443) for {len(recipients)} recipient(s)...")
+        if send_via_brevo_api(brevo_api_key, smtp_user, recipients, subject, html_body, plain_body, reply_to=record.get('email', '')):
+            print(f"[MAIL SUCCESS] Ticket #{record['id']} delivered via Brevo API")
+            return True
+        print("[MAIL WARN] Brevo API failed, trying next configured method...")
 
-    # Step 1: Port 587 STARTTLS (Recommended for Gmail)
-    try:
-        print(f"[MAIL] Attempting Port 587 (TLS) for {len(recipients)} recipient(s)...")
-        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=15)
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
-        server.login(smtp_user, smtp_pass)
-        server.sendmail(smtp_user, recipients, msg.as_string())
-        server.quit()
-        print(f"[MAIL SUCCESS] Ticket #{record['id']} sent to: {', '.join(recipients)}")
-        return True
-    except Exception as e587:
-        print(f"[MAIL WARN] Port 587 failed: {e587}. Trying Port 465 (SSL)...")
+    # 2. PRIORITY 2: Resend HTTPS REST API (Port 443)
+    if resend_api_key:
+        print(f"[MAIL] Sending via Resend HTTPS API (Port 443) for {len(recipients)} recipient(s)...")
+        if send_via_resend_api(resend_api_key, smtp_user, recipients, subject, html_body, plain_body, reply_to=record.get('email', '')):
+            print(f"[MAIL SUCCESS] Ticket #{record['id']} delivered via Resend API")
+            return True
+        print("[MAIL WARN] Resend API failed, trying next configured method...")
 
-    # Step 2: Fallback to Port 465 SSL
-    try:
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=15)
-        server.login(smtp_user, smtp_pass)
-        server.sendmail(smtp_user, recipients, msg.as_string())
-        server.quit()
-        print(f"[MAIL SUCCESS] Ticket #{record['id']} sent via SSL 465 to: {', '.join(recipients)}")
-        return True
-    except Exception as e465:
-        print(f"[MAIL ERROR] Port 465 also failed: {e465}")
-        return False
+    # 3. PRIORITY 3: HTTPS Webhook (Port 443 - Google Apps Script / Zapier)
+    if webhook_url:
+        print(f"[MAIL] Sending via HTTPS Webhook (Port 443) for {len(recipients)} recipient(s)...")
+        if send_via_webhook(webhook_url, record, recipients, subject, html_body, plain_body):
+            print(f"[MAIL SUCCESS] Ticket #{record['id']} delivered via Webhook")
+            return True
+        print("[MAIL WARN] Webhook failed, trying direct SMTP...")
+
+    # 4. PRIORITY 4: Direct Gmail SMTP (Port 587/465)
+    # Note: On Localhost or Paid Clouds, this works 100%. On Render Free Tier, ports 587/465 are blocked by firewall.
+    if smtp_user and smtp_pass:
+        print(f"[MAIL] Attempting direct Gmail SMTP socket for {len(recipients)} recipient(s)...")
+        if send_via_direct_smtp(smtp_user, smtp_pass, recipients, subject, html_body, plain_body, reply_to=record.get('email', '')):
+            print(f"[MAIL SUCCESS] Ticket #{record['id']} delivered via Gmail SMTP")
+            return True
+
+    print("[MAIL ERROR] All configured mail delivery methods failed or none were configured.")
+    return False
 
 
 # ─── HEALTH CHECK ─────────────────────────────────────────────────────────────
 @app.get('/api/health')
 def health():
+    try:
+        if os.path.exists(ENV_FILE):
+            load_dotenv(ENV_FILE, override=True)
+        else:
+            load_dotenv(override=True)
+    except Exception:
+        pass
+
+    smtp_user = os.environ.get('SMTP_USER', '').strip()
+    smtp_pass = os.environ.get('SMTP_PASS', '').strip()
+    brevo_key = os.environ.get('BREVO_API_KEY', '').strip()
+    resend_key = os.environ.get('RESEND_API_KEY', '').strip()
+    webhook_url = os.environ.get('EMAIL_WEBHOOK_URL', '').strip()
+
+    active_methods = []
+    if brevo_key:
+        active_methods.append('Brevo HTTPS API (Port 443 - Cloud/Render Recommended)')
+    if resend_key:
+        active_methods.append('Resend HTTPS API (Port 443)')
+    if webhook_url:
+        active_methods.append('HTTPS Webhook (Port 443)')
+    if smtp_user and smtp_pass:
+        active_methods.append('Direct Gmail SMTP (Port 587/465 - Local/Paid Host)')
+
     return {
         'status': 'ok',
         'backend': 'Python FastAPI LMS Server',
         'recipients': get_recipients(),
-        'smtp_configured': bool(os.environ.get('SMTP_USER') and os.environ.get('SMTP_PASS')),
+        'smtp_configured': bool(active_methods),
+        'mail_methods': active_methods,
         'time': datetime.now().isoformat()
     }
 
 
-# ─── MAIL TEST API ────────────────────────────────────────────────────────────
+# ─── MAIL TEST API (SUPPORTS BOTH GET AND POST) ────────────────────────────────
+@app.get('/api/test-mail')
 @app.post('/api/test-mail')
 def test_mail_endpoint():
-    # Reload .env in case user updated it
-    load_dotenv(override=True)
-    recipients = get_recipients()
-    smtp_user = os.environ.get('SMTP_USER', '').strip()
-    smtp_pass = os.environ.get('SMTP_PASS', '').strip()
+    try:
+        if os.path.exists(ENV_FILE):
+            load_dotenv(ENV_FILE, override=True)
+        else:
+            load_dotenv(override=True)
+    except Exception:
+        pass
 
-    if not smtp_user or not smtp_pass:
-        return error("SMTP_USER or SMTP_PASS is missing in .env file", 400)
+    recipients = get_recipients()
+    smtp_user = os.environ.get('SMTP_USER', '').strip() or 'theprimecareers@gmail.com'
+    smtp_pass = os.environ.get('SMTP_PASS', '').strip()
+    brevo_key = os.environ.get('BREVO_API_KEY', '').strip()
+    resend_key = os.environ.get('RESEND_API_KEY', '').strip()
+    webhook_url = os.environ.get('EMAIL_WEBHOOK_URL', '').strip()
+
+    active_transport = []
+    if brevo_key:
+        active_transport.append('Brevo HTTPS API (Port 443)')
+    if resend_key:
+        active_transport.append('Resend HTTPS API (Port 443)')
+    if webhook_url:
+        active_transport.append('HTTPS Webhook (Port 443)')
+    if smtp_user and smtp_pass:
+        active_transport.append('Direct Gmail SMTP (Port 587/465)')
+
+    if not active_transport:
+        return JSONResponse(status_code=400, content={
+            'success': False,
+            'message': 'No email delivery method configured in environment. Set BREVO_API_KEY (for Render) or SMTP_USER/SMTP_PASS.',
+            'recipients': recipients
+        })
 
     dummy_record = {
         'id': f"TEST-{int(time.time())}",
@@ -324,10 +542,16 @@ def test_mail_endpoint():
     if success:
         return {
             'success': True,
-            'message': f"Test email successfully sent to {len(recipients)} recipient(s): {', '.join(recipients)}",
-            'recipients': recipients
+            'message': f"Test email successfully delivered to {len(recipients)} recipient(s): {', '.join(recipients)}",
+            'recipients': recipients,
+            'active_transport': active_transport
         }
-    return error("Failed to send email. Check SMTP credentials or Google App Password.", 500)
+    return JSONResponse(status_code=500, content={
+        'success': False,
+        'message': 'Failed to send email. If running on Render Free Tier, note that Render blocks outbound SMTP ports 587 and 465. Add BREVO_API_KEY in Render Environment Variables to send over Port 443 HTTPS.',
+        'recipients': recipients,
+        'active_transport': active_transport
+    })
 
 
 
