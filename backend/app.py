@@ -1,5 +1,11 @@
+# for backend local runnning ----
 # uvicorn app:app --reload --port 5000
 # python app.py
+
+
+# for server run -------
+# uvicorn app:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+
 import os
 import json
 import time
