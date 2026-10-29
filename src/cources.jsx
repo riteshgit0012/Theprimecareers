@@ -8,7 +8,6 @@ import aviationImg from './assets/course-aviation.jpg'
 import travelImg from './assets/course-travel.png'
 import hotelImg from './assets/course-hotel.jpg'
 import aiImg from './assets/course-ai.jpg'
-import learningFeaturesBanner from './assets/learning-features-banner.png'
 
 export const imageMap = {
   aviation: aviationImg,
@@ -513,6 +512,136 @@ function AdmissionProcessBar() {
   )
 }
 
+
+// ─── LEARNING FEATURES BANNER (VECTOR-SHARP & CRISP REPLICA OF REFERENCE IMAGE) ──
+function LearningFeaturesBanner() {
+  const features = [
+    {
+      title: '100% Online\nLearning',
+      singleTitle: '100% Online Learning',
+      desc: 'Learn from anywhere, at your own pace.',
+      icon: (
+        // Desktop monitor with checkmark
+        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8 21h8m-4-4v4M7 10l3 3 7-7" />
+        </svg>
+      ),
+    },
+    {
+      title: 'Recognized\nCertification',
+      singleTitle: 'Recognized Certification',
+      desc: 'Get a certificate to boost your career.',
+      icon: (
+        // Certificate badge / document with ribbon
+        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v3m-1.5-1.5h3" />
+        </svg>
+      ),
+    },
+    {
+      title: 'Expert Trainers',
+      singleTitle: 'Expert Trainers',
+      desc: 'Learn from industry professionals.',
+      icon: (
+        // Mentor / Trainer with graduation cap
+        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 14v7" />
+        </svg>
+      ),
+    },
+    {
+      title: 'Dedicated Support',
+      singleTitle: 'Dedicated Support',
+      desc: 'Our team is here to help you, always.',
+      icon: (
+        // Customer support headset / 24x7 help
+        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a5 5 0 010-7.072m0 0L5.636 5.636M12 12h.01" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m-3 0h6" />
+        </svg>
+      ),
+    },
+    {
+      title: 'Career Guidance',
+      singleTitle: 'Career Guidance',
+      desc: 'Get placement support and career counseling.',
+      icon: (
+        // Growth bar chart with upward arrow
+        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 21v-4m5 4v-7m5 7v-10" />
+        </svg>
+      ),
+    },
+  ]
+
+  return (
+    <div className="mt-12 sm:mt-16 max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-1 sm:px-2">
+      {/* Outer Card with smooth soft-cyan/mint gradient & crisp border matching reference image */}
+      <div className="bg-gradient-to-r from-[#eef9f8] via-[#e5f7f5] to-[#eef9f8] border border-[#bceae3] rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 lg:p-5 shadow-xs">
+        
+        {/* Desktop / Large Screen Layout: 5 items with dividers */}
+        <div className="hidden lg:flex items-center justify-between gap-3 xl:gap-4">
+          {features.map((item, idx) => (
+            <div key={idx} className="flex items-center gap-3 xl:gap-4 flex-1">
+              {/* Feature item */}
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                {/* Circular Emerald Icon */}
+                <div className="w-11 h-11 xl:w-12 xl:h-12 rounded-full bg-[#00a86b] flex-shrink-0 flex items-center justify-center shadow-xs transition-transform hover:scale-105">
+                  {item.icon}
+                </div>
+                {/* Text Block */}
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-xs xl:text-sm font-extrabold text-[#0c2b4d] leading-snug whitespace-pre-line">
+                    {item.title}
+                  </h4>
+                  <p className="text-[10px] xl:text-[11px] text-[#0284c7] font-medium leading-tight mt-0.5">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+
+              {/* Vertical divider line between items */}
+              {idx < features.length - 1 && (
+                <div className="h-10 w-[1.5px] bg-[#a8e3dc] flex-shrink-0 mx-1" />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Mobile / Tablet Responsive Layout (< lg screens) */}
+        <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          {features.map((item, idx) => (
+            <div
+              key={idx}
+              className={`bg-white/80 backdrop-blur-xs rounded-xl p-3 border border-[#bceae3] flex items-center gap-3 shadow-2xs ${
+                idx === features.length - 1 ? 'sm:col-span-2 sm:max-w-md sm:mx-auto sm:w-full' : ''
+              }`}
+            >
+              <div className="w-10 h-10 rounded-full bg-[#00a86b] flex-shrink-0 flex items-center justify-center shadow-xs">
+                {item.icon}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="text-xs font-bold text-[#0c2b4d] leading-snug">
+                  {item.singleTitle}
+                </h4>
+                <p className="text-[11px] text-[#0284c7] font-medium leading-tight mt-0.5">
+                  {item.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
 // ─── MAIN COURSES PAGE ────────────────────────────────────────────────────────
 export default function Courses() {
   const [selectedCourse, setSelectedCourse] = useState(null)
@@ -668,17 +797,8 @@ export default function Courses() {
             ))}
           </div>
 
-          {/* ─── Learning Features Banner (Image - Placed below courses & above footer) ─── */}
-          <div className="mt-12 sm:mt-16 max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-1 sm:px-2">
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-2 sm:p-3 border border-sky-100 shadow-xs hover:shadow-md transition-shadow overflow-hidden">
-              <img
-                src={learningFeaturesBanner}
-                alt="100% Online Learning • Recognized Certification • Expert Trainers • Dedicated Support • Career Guidance"
-                className="w-full h-auto rounded-xl object-contain block mx-auto"
-                loading="lazy"
-              />
-            </div>
-          </div>
+          {/* ─── Learning Features Banner (Vector-Sharp & Crisp) ─── */}
+          <LearningFeaturesBanner />
 
           {/* ─── Bottom Counseling Help CTA ─── */}
           <div className="mt-16 text-center bg-white rounded-3xl p-8 sm:p-10 border border-blue-100 max-w-4xl mx-auto shadow-sm">
