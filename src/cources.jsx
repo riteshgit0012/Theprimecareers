@@ -8,6 +8,7 @@ import aviationImg from './assets/course-aviation.jpg'
 import travelImg from './assets/course-travel.png'
 import hotelImg from './assets/course-hotel.jpg'
 import aiImg from './assets/course-ai.jpg'
+import learningFeaturesBanner from './assets/learning-features-banner.png'
 
 export const imageMap = {
   aviation: aviationImg,
@@ -334,6 +335,184 @@ function CourseModal({ course, onClose }) {
   )
 }
 
+// ─── SIMPLE ADMISSION PROCESS COMPONENT (FROM IMAGE) ──────────────────────────
+function AdmissionProcessBar() {
+  const steps = [
+    {
+      num: 1,
+      title: 'Choose Your Course',
+      desc: 'Select from 4 exciting course categories.',
+      bgColor: 'bg-[#0284c7]',
+      icon: (
+        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+        </svg>
+      ),
+    },
+    {
+      num: 2,
+      title: 'Fill the Online Form',
+      desc: 'Provide your basic details & documents.',
+      bgColor: 'bg-[#7c3aed]',
+      icon: (
+        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+      ),
+    },
+    {
+      num: 3,
+      title: 'Get a Call from Our Expert Team',
+      desc: 'Our team will guide you and assist with your queries.',
+      bgColor: 'bg-[#059669]',
+      icon: (
+        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1.02l-2.2 2.2z" />
+        </svg>
+      ),
+    },
+    {
+      num: 4,
+      title: 'Make the Payment',
+      desc: 'Secure & easy online payment.',
+      bgColor: 'bg-[#ea580c]',
+      icon: (
+        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+    },
+  ]
+
+  return (
+    <div className="mb-10 sm:mb-12 max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto">
+      {/* Outer Card with subtle sky gradient, border & shadow matching reference image */}
+      <div className="bg-gradient-to-r from-sky-50/90 via-blue-50/50 to-indigo-50/70 border border-sky-200/80 rounded-2xl sm:rounded-3xl p-4 sm:p-5 lg:p-6 shadow-xs">
+        
+        {/* Desktop / Large Screen Layout: Horizontal Flex matching the image */}
+        <div className="hidden lg:flex items-center justify-between gap-3 xl:gap-4">
+          
+          {/* Left Title Block */}
+          <div className="flex-shrink-0 pr-4 border-r border-sky-200/90 max-w-[170px]">
+            <h3 className="text-base xl:text-lg font-black text-[#1e3a8a] leading-tight">
+              Simple<br />Admission Process
+            </h3>
+            <p className="text-xs text-slate-500 font-medium mt-1 leading-snug">
+              Just 4 easy steps and you're in!
+            </p>
+          </div>
+
+          {/* 4 Process Steps with Arrows */}
+          <div className="flex-1 flex items-center justify-between gap-2 xl:gap-3 px-2">
+            {steps.map((step, idx) => (
+              <div key={step.num} className="flex items-center gap-2 xl:gap-3 flex-1">
+                {/* Step Item */}
+                <div className="flex flex-col items-center text-center flex-1">
+                  {/* Icon Circle with Top Number Badge */}
+                  <div className="relative mb-2">
+                    <div className={`w-12 h-12 rounded-full ${step.bgColor} flex items-center justify-center shadow-md transition-transform hover:scale-105`}>
+                      {step.icon}
+                    </div>
+                    {/* Top Number Badge */}
+                    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white text-blue-900 border border-slate-200 shadow-xs flex items-center justify-center text-[10px] font-black">
+                      {step.num}
+                    </div>
+                  </div>
+
+                  {/* Step Title & Subtitle */}
+                  <h4 className="text-xs font-bold text-[#1e3a8a] leading-tight max-w-[130px]">
+                    {step.title}
+                  </h4>
+                  <p className="text-[11px] text-slate-500 font-normal leading-tight mt-0.5 max-w-[135px]">
+                    {step.desc}
+                  </p>
+                </div>
+
+                {/* Arrow pointing right (between steps) */}
+                {idx < steps.length - 1 && (
+                  <div className="text-slate-300 font-bold text-base flex-shrink-0 pb-6 select-none">
+                    →
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Right Card: Get Confirmation */}
+          <div className="flex-shrink-0 bg-[#eaf4ff] border border-blue-200/90 rounded-2xl p-3 xl:p-3.5 text-center flex flex-col items-center justify-center min-w-[160px] shadow-xs">
+            <div className="w-10 h-10 rounded-full bg-white border border-sky-300 flex items-center justify-center shadow-xs mb-1.5 text-sky-600">
+              <svg className="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h4 className="text-xs font-extrabold text-[#1e3a8a] leading-tight">
+              Get Confirmation
+            </h4>
+            <p className="text-[11px] text-slate-500 font-normal leading-tight mt-0.5 max-w-[135px]">
+              Receive your admission confirmation via email.
+            </p>
+          </div>
+
+        </div>
+
+        {/* Mobile / Tablet Responsive Layout (< lg screens) */}
+        <div className="lg:hidden">
+          {/* Header */}
+          <div className="text-center pb-3.5 border-b border-sky-200/80 mb-4">
+            <h3 className="text-base sm:text-lg font-black text-[#1e3a8a]">
+              Simple Admission Process
+            </h3>
+            <p className="text-xs text-slate-500 font-medium">
+              Just 4 easy steps and you're in!
+            </p>
+          </div>
+
+          {/* Steps Grid: 2 columns on mobile */}
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-3.5">
+            {steps.map((step) => (
+              <div key={step.num} className="bg-white/80 rounded-xl p-3 border border-sky-100 flex flex-col items-center text-center shadow-2xs">
+                <div className="relative mb-2">
+                  <div className={`w-10 h-10 rounded-full ${step.bgColor} flex items-center justify-center shadow-sm`}>
+                    {step.icon}
+                  </div>
+                  <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white text-blue-900 border border-slate-200 shadow-xs flex items-center justify-center text-[9px] font-black">
+                    {step.num}
+                  </div>
+                </div>
+                <h4 className="text-xs font-bold text-[#1e3a8a] leading-tight mb-0.5">
+                  {step.title}
+                </h4>
+                <p className="text-[10px] sm:text-[11px] text-slate-500 leading-tight">
+                  {step.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Confirmation Box (Full width on mobile) */}
+          <div className="bg-[#eaf4ff] border border-blue-200 rounded-xl p-3 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-white border border-sky-300 flex-shrink-0 flex items-center justify-center shadow-xs text-sky-600">
+              <svg className="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-[#1e3a8a]">
+                Get Confirmation
+              </h4>
+              <p className="text-[11px] text-slate-500 leading-tight">
+                Receive your admission confirmation via email.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
 // ─── MAIN COURSES PAGE ────────────────────────────────────────────────────────
 export default function Courses() {
   const [selectedCourse, setSelectedCourse] = useState(null)
@@ -404,6 +583,9 @@ export default function Courses() {
               </div>
             </div> */}
           {/* </div> */}
+
+          {/* ─── Simple Admission Process (From Reference Image) ─── */}
+          <AdmissionProcessBar />
 
           {/* ─── Courses 2x2 Grid (Dynamic, Sleek Human Style Layout) ─── */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto">
@@ -484,6 +666,18 @@ export default function Courses() {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* ─── Learning Features Banner (Image - Placed below courses & above footer) ─── */}
+          <div className="mt-12 sm:mt-16 max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-1 sm:px-2">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-2 sm:p-3 border border-sky-100 shadow-xs hover:shadow-md transition-shadow overflow-hidden">
+              <img
+                src={learningFeaturesBanner}
+                alt="100% Online Learning • Recognized Certification • Expert Trainers • Dedicated Support • Career Guidance"
+                className="w-full h-auto rounded-xl object-contain block mx-auto"
+                loading="lazy"
+              />
+            </div>
           </div>
 
           {/* ─── Bottom Counseling Help CTA ─── */}
