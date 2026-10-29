@@ -642,6 +642,159 @@ function LearningFeaturesBanner() {
   )
 }
 
+
+// ─── COURSE FEES & DURATION COMPONENT (FROM REFERENCE IMAGE) ──────────────────
+function CourseFeesSection() {
+  const navigate = useNavigate()
+
+  const handlePay = (courseName, duration, amount) => {
+    navigate(`/register?course=${encodeURIComponent(courseName)}&duration=${encodeURIComponent(duration)}&fee=${encodeURIComponent(amount)}`)
+  }
+
+  return (
+    <div className="mt-10 sm:mt-12 mb-6 sm:mb-8 max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-1 sm:px-2">
+      {/* Outer Card with sky-blue gradient & rounded border */}
+      <div className="bg-gradient-to-r from-sky-50/90 via-blue-50/50 to-indigo-50/70 border border-sky-200/80 rounded-2xl sm:rounded-3xl p-4 sm:p-5 lg:p-6 shadow-xs">
+        
+        {/* Main Grid: Left Title Block + Middle Pink Card + Right Blue Card */}
+        <div className="flex flex-col lg:flex-row items-center gap-4 xl:gap-6">
+          
+          {/* 1. Left Title Block */}
+          <div className="flex items-center lg:items-start gap-3.5 lg:flex-col lg:justify-center w-full lg:w-[220px] xl:w-[250px] flex-shrink-0">
+            {/* Dark Blue Graduation Cap Icon */}
+            <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#0c4a6e] flex items-center justify-center shadow-md flex-shrink-0 text-white">
+              <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg sm:text-xl font-black text-[#0f2942] leading-tight">
+                Course Fees &amp; Duration
+              </h3>
+              <p className="text-xs text-slate-500 font-medium mt-1 leading-snug">
+                Flexible payment options to match your learning goals.
+              </p>
+            </div>
+          </div>
+
+          {/* 2. Middle Card: Aviation, Tour & Travel & Maritime & Hotel Services (Pink Theme) */}
+          <div className="flex-1 w-full bg-[#fff1f5] border border-pink-200/90 rounded-2xl p-4 sm:p-4.5 shadow-2xs">
+            {/* Header: Airplane Icon + Title */}
+            <div className="flex items-center gap-2.5 mb-3.5">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#f43f5e] flex items-center justify-center text-white shadow-xs flex-shrink-0">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-xs sm:text-sm font-black text-[#e11d48] leading-tight truncate">
+                  Aviation, Tour &amp; Travel &amp;
+                </h4>
+                <h4 className="text-xs sm:text-sm font-black text-[#e11d48] leading-tight truncate">
+                  Maritime &amp; Hotel Services
+                </h4>
+                <span className="text-[10px] sm:text-[11px] font-bold text-[#f43f5e]">
+                  (3 Courses)
+                </span>
+              </div>
+            </div>
+
+            {/* Pricing Options (3 Months & 6 Months) */}
+            <div className="flex items-center justify-around gap-2 pt-1 border-t border-pink-200/60">
+              {/* Option 1: 3 Months */}
+              <div className="flex flex-col items-center text-center flex-1">
+                <span className="text-xs font-bold text-slate-700">3 Months</span>
+                <span className="text-lg sm:text-xl xl:text-2xl font-black text-[#e11d48] my-1">
+                  ₹33,000
+                </span>
+                <button
+                  onClick={() => handlePay('Aviation / Travel / Maritime', '3 Months', '₹33,000')}
+                  className="px-4 sm:px-5 py-1.5 bg-[#e11d48] hover:bg-[#be123c] text-white text-xs font-bold rounded-full shadow-xs hover:shadow transition-all active:scale-95 cursor-pointer"
+                >
+                  Pay Now
+                </button>
+              </div>
+
+              {/* Vertical Divider */}
+              <div className="h-14 w-[1px] bg-pink-200/90 flex-shrink-0 mx-1" />
+
+              {/* Option 2: 6 Months */}
+              <div className="flex flex-col items-center text-center flex-1">
+                <span className="text-xs font-bold text-slate-700">6 Months</span>
+                <span className="text-lg sm:text-xl xl:text-2xl font-black text-[#e11d48] my-1">
+                  ₹55,000
+                </span>
+                <button
+                  onClick={() => handlePay('Aviation / Travel / Maritime', '6 Months', '₹55,000')}
+                  className="px-4 sm:px-5 py-1.5 bg-[#e11d48] hover:bg-[#be123c] text-white text-xs font-bold rounded-full shadow-xs hover:shadow transition-all active:scale-95 cursor-pointer"
+                >
+                  Pay Now
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Right Card: AI & Digital Marketing (Blue Theme) */}
+          <div className="flex-1 w-full bg-[#f0f7ff] border border-blue-200/90 rounded-2xl p-4 sm:p-4.5 shadow-2xs">
+            {/* Header: Chip Icon + Title */}
+            <div className="flex items-center gap-2.5 mb-3.5">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#4f46e5] flex items-center justify-center text-white shadow-xs flex-shrink-0">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M3 9h2m-2 6h2m14-6h2m-2 6h2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-xs sm:text-sm font-black text-[#1e40af] leading-tight">
+                  AI &amp; Digital Marketing
+                </h4>
+                <span className="text-[10px] sm:text-[11px] font-bold text-[#2563eb]">
+                  (1 Course)
+                </span>
+              </div>
+            </div>
+
+            {/* Pricing Options (3 Months & 6 Months) */}
+            <div className="flex items-center justify-around gap-2 pt-1 border-t border-blue-200/60">
+              {/* Option 1: 3 Months */}
+              <div className="flex flex-col items-center text-center flex-1">
+                <span className="text-xs font-bold text-slate-700">3 Months</span>
+                <span className="text-lg sm:text-xl xl:text-2xl font-black text-[#0284c7] my-1">
+                  ₹15,000
+                </span>
+                <button
+                  onClick={() => handlePay('AI & Digital Marketing', '3 Months', '₹15,000')}
+                  className="px-4 sm:px-5 py-1.5 bg-[#0284c7] hover:bg-[#0369a1] text-white text-xs font-bold rounded-full shadow-xs hover:shadow transition-all active:scale-95 cursor-pointer"
+                >
+                  Pay Now
+                </button>
+              </div>
+
+              {/* Vertical Divider */}
+              <div className="h-14 w-[1px] bg-blue-200/90 flex-shrink-0 mx-1" />
+
+              {/* Option 2: 6 Months */}
+              <div className="flex flex-col items-center text-center flex-1">
+                <span className="text-xs font-bold text-slate-700">6 Months</span>
+                <span className="text-lg sm:text-xl xl:text-2xl font-black text-[#0284c7] my-1">
+                  ₹25,000
+                </span>
+                <button
+                  onClick={() => handlePay('AI & Digital Marketing', '6 Months', '₹25,000')}
+                  className="px-4 sm:px-5 py-1.5 bg-[#0284c7] hover:bg-[#0369a1] text-white text-xs font-bold rounded-full shadow-xs hover:shadow transition-all active:scale-95 cursor-pointer"
+                >
+                  Pay Now
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
 // ─── MAIN COURSES PAGE ────────────────────────────────────────────────────────
 export default function Courses() {
   const [selectedCourse, setSelectedCourse] = useState(null)
@@ -796,6 +949,9 @@ export default function Courses() {
               </div>
             ))}
           </div>
+
+          {/* ─── Course Fees & Duration (From Reference Image) ─── */}
+          <CourseFeesSection />
 
           {/* ─── Learning Features Banner (Vector-Sharp & Crisp) ─── */}
           <LearningFeaturesBanner />
