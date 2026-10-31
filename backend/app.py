@@ -31,13 +31,25 @@ BACKEND_ENV = os.path.join(BASE_DIR, '.env')
 ROOT_ENV = os.path.join(os.path.dirname(BASE_DIR), '.env')
 
 def reload_env():
+    # Preserve any valid environment variables already set on host/Render
+    saved_keys = {
+        k: os.environ[k]
+        for k in ['BREVO_API_KEY', 'RESEND_API_KEY', 'EMAIL_WEBHOOK_URL', 'SMTP_USER', 'SMTP_PASS', 'ADMIN_EMAILS']
+        if os.environ.get(k, '').strip()
+    }
+
     try:
-        if os.path.exists(ROOT_ENV):
-            load_dotenv(ROOT_ENV, override=True)
+        # Load backend env first, then root env without overwriting existing environment variables
         if os.path.exists(BACKEND_ENV):
-            load_dotenv(BACKEND_ENV, override=True)
+            load_dotenv(BACKEND_ENV, override=False)
+        if os.path.exists(ROOT_ENV):
+            load_dotenv(ROOT_ENV, override=False)
     except Exception:
         pass
+
+    for k, v in saved_keys.items():
+        if v and v.strip():
+            os.environ[k] = v
 
 reload_env()
 
