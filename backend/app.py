@@ -27,13 +27,19 @@ from fastapi.staticfiles import StaticFiles
 from werkzeug.utils import secure_filename  # pip install werkzeug (Flask ke saath already aata hai)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ENV_FILE = os.path.join(BASE_DIR, '.env')
+BACKEND_ENV = os.path.join(BASE_DIR, '.env')
+ROOT_ENV = os.path.join(os.path.dirname(BASE_DIR), '.env')
 
-# Explicitly load .env from backend folder or root
-if os.path.exists(ENV_FILE):
-    load_dotenv(ENV_FILE, override=True)
-else:
-    load_dotenv(override=True)
+def reload_env():
+    try:
+        if os.path.exists(ROOT_ENV):
+            load_dotenv(ROOT_ENV, override=True)
+        if os.path.exists(BACKEND_ENV):
+            load_dotenv(BACKEND_ENV, override=True)
+    except Exception:
+        pass
+
+reload_env()
 
 app = FastAPI(title="LMS Backend")
 
@@ -72,13 +78,7 @@ def get_recipients():
     Returns list of admin recipient emails.
     Supports ADMIN_EMAILS (comma/semicolon separated), ADMIN_EMAIL, or SMTP_USER.
     """
-    try:
-        if os.path.exists(ENV_FILE):
-            load_dotenv(ENV_FILE, override=True)
-        else:
-            load_dotenv(override=True)
-    except Exception:
-        pass
+    reload_env()
     raw = os.environ.get('ADMIN_EMAILS') or os.environ.get('ADMIN_EMAIL') or os.environ.get('SMTP_USER', '') or ''
     cleaned = raw.replace(';', ',')
     recipients = [e.strip() for e in cleaned.split(',') if e.strip() and '@' in e]
@@ -284,13 +284,7 @@ def send_via_direct_smtp(smtp_user: str, smtp_pass: str, recipients: list, subje
 
 # ─── MAIN EMAIL DISPATCHER ────────────────────────────────────────────────────
 def send_admission_mail(record: dict) -> bool:
-    try:
-        if os.path.exists(ENV_FILE):
-            load_dotenv(ENV_FILE, override=True)
-        else:
-            load_dotenv(override=True)
-    except Exception:
-        pass
+    reload_env()
 
     recipients = get_recipients()
     if not recipients:
@@ -455,13 +449,7 @@ The Prime Career Admissions System
 # ─── HEALTH CHECK ─────────────────────────────────────────────────────────────
 @app.get('/api/health')
 def health():
-    try:
-        if os.path.exists(ENV_FILE):
-            load_dotenv(ENV_FILE, override=True)
-        else:
-            load_dotenv(override=True)
-    except Exception:
-        pass
+    reload_env()
 
     smtp_user = os.environ.get('SMTP_USER', '').strip()
     smtp_pass = os.environ.get('SMTP_PASS', '').strip()
@@ -493,13 +481,7 @@ def health():
 @app.get('/api/test-mail')
 @app.post('/api/test-mail')
 def test_mail_endpoint():
-    try:
-        if os.path.exists(ENV_FILE):
-            load_dotenv(ENV_FILE, override=True)
-        else:
-            load_dotenv(override=True)
-    except Exception:
-        pass
+    reload_env()
 
     recipients = get_recipients()
     smtp_user = os.environ.get('SMTP_USER', '').strip() or 'theprimecareers@gmail.com'
