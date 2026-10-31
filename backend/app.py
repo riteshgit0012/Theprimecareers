@@ -85,17 +85,18 @@ ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', SMTP_USER)
 file_lock = threading.Lock()
 
 
+DEFAULT_ADMIN_EMAILS = "ritesh224172@gmail.com, theprimecareers@gmail.com"
+
 def get_recipients():
     """
     Returns list of admin recipient emails.
-    Supports ADMIN_EMAILS (comma/semicolon separated), ADMIN_EMAIL, or SMTP_USER.
+    Defaults to both ritesh224172@gmail.com and theprimecareers@gmail.com.
     """
     reload_env()
-    raw = os.environ.get('ADMIN_EMAILS') or os.environ.get('ADMIN_EMAIL') or os.environ.get('SMTP_USER', '') or ''
+    raw = os.environ.get('ADMIN_EMAILS') or DEFAULT_ADMIN_EMAILS
     cleaned = raw.replace(';', ',')
     recipients = [e.strip() for e in cleaned.split(',') if e.strip() and '@' in e]
-    smtp_user = os.environ.get('SMTP_USER', '').strip()
-    return recipients or ([smtp_user] if smtp_user else [])
+    return recipients or ['ritesh224172@gmail.com', 'theprimecareers@gmail.com']
 
 
 def allowed_file(filename: str) -> bool:
@@ -299,6 +300,9 @@ def send_admission_mail(record: dict) -> bool:
     reload_env()
 
     recipients = get_recipients()
+    student_email = str(record.get('email', '')).strip()
+    if student_email and '@' in student_email and student_email not in recipients:
+        recipients = list(recipients) + [student_email]
     if not recipients:
         print("[MAIL ERROR] Koi recipient email address configured nahi hai")
         return False
@@ -496,6 +500,9 @@ def test_mail_endpoint():
     reload_env()
 
     recipients = get_recipients()
+    student_email = str(record.get('email', '')).strip()
+    if student_email and '@' in student_email and student_email not in recipients:
+        recipients = list(recipients) + [student_email]
     smtp_user = os.environ.get('SMTP_USER', '').strip() or 'theprimecareers@gmail.com'
     smtp_pass = os.environ.get('SMTP_PASS', '').strip()
     brevo_key = os.environ.get('BREVO_API_KEY', '').strip()
@@ -805,8 +812,11 @@ def enroll_student(background_tasks: BackgroundTasks, data: dict = Body(default=
 
     print(f"[LMS Backend] Saved admission for {name} ({course}) - ID: {app_id}")
 
-    # Mail background me jayegi, response slow nahi hoga
-    background_tasks.add_task(send_admission_mail, record)
+    # Dispatch mail immediately via Brevo API
+    try:
+        send_admission_mail(record)
+    except Exception as me:
+        print(f"[ENROLL MAIL ERROR] {me}")
 
     return {
         'success': True,
