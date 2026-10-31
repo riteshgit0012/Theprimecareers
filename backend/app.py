@@ -136,22 +136,27 @@ def send_via_brevo_api(api_key: str, sender_email: str, recipients: list, subjec
     """
     Sends email via Brevo HTTPS REST API (Port 443).
     Bypasses Render's outbound SMTP port blocking (ports 25, 465, 587 are blocked on Free Tier).
-    Free tier allows 300 emails/day forever with verified personal sender address (e.g. Gmail).
+    Free tier allows 300 emails/day forever with verified personal sender address (e.g. ritesh224172@gmail.com).
     """
     try:
         url = "https://api.brevo.com/v3/smtp/email"
+        # In Brevo Free Tier, sender MUST be the verified account email.
+        from_email = os.environ.get('BREVO_SENDER_EMAIL', '').strip() or sender_email or 'ritesh224172@gmail.com'
+        if 'theprimecareers' in from_email.lower():
+            from_email = 'ritesh224172@gmail.com'
+
         payload = {
             "sender": {
                 "name": "The Prime Career Admissions",
-                "email": sender_email
+                "email": from_email
             },
             "to": [{"email": r.strip()} for r in recipients if r.strip() and '@' in r],
             "subject": subject,
             "htmlContent": html_body,
             "textContent": plain_body
         }
-        if reply_to and '@' in reply_to:
-            payload["replyTo"] = {"email": reply_to.strip()}
+        effective_reply_to = reply_to if (reply_to and '@' in reply_to) else 'theprimecareers@gmail.com'
+        payload["replyTo"] = {"email": effective_reply_to.strip()}
 
         data = json.dumps(payload).encode("utf-8")
         req = urllib.request.Request(
